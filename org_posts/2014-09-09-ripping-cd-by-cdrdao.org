@@ -1,0 +1,37 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "cdrdao で AccurateRip"
+date: 2014-09-09 12:07:25 +0900
+comments: true
+categories: Linux Gentoo
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+cd をリッピングする際は今まで、 EAC (Exact Audio Copy) [fn:1] を使って windows 上で、 cd をリッピングしてた。
+cddb に gracenote 使ってタグ付けしたかったからなのだけど、 api 叩けば linux からでも十分に使用できたのでわざわざ windows を立ち上げて EAC を使う必要性も感じなくなった。
+
+それで、 AccurateRip に対応したリッピングソフトを調べていたのだけど、最初は AccurateRip 準拠な cdparanoia を使用したいと考えたものの、設定項目が多く学習コストが高いため、 cdparanoia をラップするアプリケーションを利用してみることにした。調べてみると、二つの候補として以下のものがあった。
+
+* abcde
+* cdrdao
+
+abcde を初めに使ってみたが、いざリッピングすると mkcue がないと怒られた。調べてみると mkcue 自体は完全に他から取ってこないといけないようで面倒。また、 abcde 自体も思った通りの動作をしてくれず、使いづらいように感じた。
+
+cdrdao については、 man も読みやすく内部で何を行っているのか明快であったため、使いやすく感じた。
+例えば、 cdrdao を使ってリッピングを行う場合は以下のように行うだけだった [fn:2] 。
+
+#+BEGIN_HTML
+   {% include_code lang:bash 20140909/cdrdao_rip.sh %}
+#+END_HTML
+
+あと、 flac + cue な形式に変換するには以下のようにするだけ。
+
+#+BEGIN_HTML
+   {% include_code lang:bash 20140909/conv_flac.sh %}
+#+END_HTML
+
+便利でしょ!!
+
+[fn:1] http://www.exactaudiocopy.de/ Exact Audio Copy
+[fn:2] http://www.hydrogenaud.io/forums/index.php?showtopic=88238 Perfect Single-File FLAC: cdrdao vs. abcde - Hydrogenaudio Forums

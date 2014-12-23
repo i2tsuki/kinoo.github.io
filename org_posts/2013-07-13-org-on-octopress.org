@@ -1,0 +1,46 @@
+#+BEGIN_HTML
+---
+layout: post
+title: emacs の org-mode で octopress を更新する
+date: 2013-07-13 01:26
+comments: true
+categories: Emacs Org-mode Octopress
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+org-mode で、 octopress を記述する方法をまとめようとしていて、めとめられていなかったのでまとめてみた。
+ちなみに、初期の頃からずっと org-mode で書いている。
+すでに紹介されている方法 [fn:1] と差分が少しあったので注意。
+
+* 導入
+octopress は何をやっているのかというと、 markdown 記法で書かれた =.markdown= ファイルを投稿しているらしい。
+それで、 org-mode を用いて octopress には emacs の org-mode で作成したファイルを markdown 記法のファイルに変換してあげようという話。
+octopress と emacs 24.2 以降の導入が完了していることを前提に話を進める。
+
+* 準備
+org-mode 記法のファイルを markdown で出力して、それを =rake gen_deploy= すればよいというおはなしで、特に octopress 側の設定について触る必要はないのだけれど、 =rake new_post= したときに雛形の .org ファイルが生成されれば嬉しいよね。ということで、そのようにするように =Rakefile= に以下の変更を加える。
+#+BEGIN_HTML
+{% include_code lang:rb ./20130713/Rakefile.patch %}
+
+#+END_HTML
+
+* 記事を作成
+#+BEGIN_SRC
+$ rake new_post
+Enter a title for your post: org_on_octopress
+mkdir -p source/org_posts
+Creating new post: source/org_posts/2013-07-13-org-on-octopress.org
+#+END_SRC
+すると、 =./source/org_posts/= 以下に記事の雛形となるファイルが作成される。
+=./source/_posts/= 以下に変更は加わらない。
+=./source/org_posts/= の =.org= ファイルを編集して、 =C-c= =C-e= =P= =f= で =./source/_posts/= 以下に =markdown= 記法に変換したファイルを出力できる。
+=.markdown= のファイルが出来てしまえばあとは通常通りで、
+
+#+BEGIN_SRC
+$ rake gen_deploy
+#+END_SRC
+
+すればよいだけ。おわり。
+
+* 参照
+[fn:1] http://yunojy.github.io/blog/2013/02/11/emacs-de-github-blog-sono2-org-mode/ "emacs@がんばらない。なまけもの必見！今度こそ継続できる Blog を 10 分でGithub に開設する。もちろん無料 - org-mode 編 - develog.me"

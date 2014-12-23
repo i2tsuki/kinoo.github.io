@@ -1,0 +1,33 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "mpd で pulseaudio を出力先に指定する"
+date: 2014-11-02 00:00:00 +0900
+comments: true
+categories: Linux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+ALSA をオーディオの出力先に使用しているアプリケーションが mpd の他にあり、そちらを pulseaudio 対応するのが面倒だったので、多少音質が悪くなってもいいという妥協点で、 mpd のオーディオ出力先を pulseaudio にしようとしたら、少し嵌ったのでメモ。
+
+単純に =mpd.conf= の出力先に pulseaudio を以下のように追記して、 =mpc enable "My Pulse Output" とやるだけではダメで。
+どうやら、 pulseaudio に出力できないと mpd から怒られる。
+
+悪いのは pulseaudio の設定で、 =/etc/pulse/default.pa= を書き換える必要がある。
+
+#+BEGIN_SRC
+-#load-module module-native-protocol-tcp
++load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
+#+END_SRC
+
+書き換えた後に pulseaudio を再起動。
+
+#+BEGIN_HTML
+{% codeblock lang:bash %}
+$ pulseaudio --kill
+$ pulseaudio --start --log-target=syslog
+{% endcodeblock %}
+#+END_HTML
+
+* 参照
+https://wiki.archlinux.org/index.php/MPD/Tips_and_Tricks#PulseAudio "Music Player Daemon/Tips and tricks - ArchWiki"

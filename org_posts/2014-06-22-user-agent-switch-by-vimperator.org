@@ -1,0 +1,28 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "User Agent Switcher を Vimperator からいただく"
+date: 2013-12-01 01:35:53 +0900
+comments: true
+categories: Vimperator Firefox
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+User Agent Switcher を vimperator から操作したいので、調べてみた。すでにやっておられた方がいらした [fn:1] 。
+
+リンク先のコードは期限切れだったが、 vimperator-plugins のリポジトリ [fn:2] にあったため、利用。
+
+使い方はリンク先と同様に、以下の通り。
+
+#+BEGIN_SRC
+:ua [切り替えるエージェント名]
+#+END_SRC
+でエージェントを切り替え。
+
+#+BEGIN_SRC
+:ua Default
+#+END_SRC
+でデフォルトに。
+
+[fn:1] http://mattn.kaoriya.net/software/firefox/vimperator/20080724195945.htm Big Sky :: UserAgent を切り替えられる vimperator plugin 、「 uaSwitch.js 」書いた。
+[fn:2] https://github.com/vimpr/vimperator-plugins vimpr/vimperator-plugins · GitHub

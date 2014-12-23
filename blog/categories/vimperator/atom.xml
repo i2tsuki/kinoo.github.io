@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Vimperator | 日々、しこうさくごの足あと]]></title>
+  <link href="http://kixonn.github.io/blog/categories/vimperator/atom.xml" rel="self"/>
+  <link href="http://kixonn.github.io/"/>
+  <updated>2014-12-24T01:21:25+09:00</updated>
+  <id>http://kixonn.github.io/</id>
+  <author>
+    <name><![CDATA[kixonn]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[User Agent Switcher を Vimperator からいただく]]></title>
+    <link href="http://kixonn.github.io/blog/2013/12/01/user-agent-switch-by-vimperator/"/>
+    <updated>2013-12-01T01:35:53+09:00</updated>
+    <id>http://kixonn.github.io/blog/2013/12/01/user-agent-switch-by-vimperator</id>
+    <content type="html"><![CDATA[<p>
+User Agent Switcher を vimperator から操作したいので、調べてみた。すでにやっておられた方がいらした <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+
+
+
+<p>
+リンク先のコードは期限切れだったが、 vimperator-plugins のリポジトリ <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> にあったため、利用。
+</p>
+
+
+
+
+<p>
+使い方はリンク先と同様に、以下の通り。
+</p>
+
+
+
+
+<pre class="example">
+:ua [切り替えるエージェント名]
+</pre>
+
+
+<p>
+でエージェントを切り替え。
+</p>
+
+
+
+
+<pre class="example">
+:ua Default
+</pre>
+
+
+<p>
+でデフォルトに。
+</p>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://mattn.kaoriya.net/software/firefox/vimperator/20080724195945.htm">http://mattn.kaoriya.net/software/firefox/vimperator/20080724195945.htm</a> Big Sky :: UserAgent を切り替えられる vimperator plugin 、「 uaSwitch.js 」書いた。
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="https://github.com/vimpr/vimperator-plugins">https://github.com/vimpr/vimperator-plugins</a> vimpr/vimperator-plugins · GitHub
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+</feed>

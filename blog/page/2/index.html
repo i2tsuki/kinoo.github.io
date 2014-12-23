@@ -1,0 +1,1865 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>日々、しこうさくごの足あと</title>
+  <meta name="author" content="kixonn">
+
+  
+  <meta name="description" content="org-mode で、 octopress を記述する方法をまとめようとしていて、めとめられていなかったのでまとめてみた。
+ちなみに、初期の頃からずっと org-mode で書いている。
+すでに紹介されている方法 1 と差分が少しあったので注意。 導入 octopress &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kixonn.github.io/blog/page/2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="日々、しこうさくごの足あと" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-41371716-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+</hgroup>
+
+</header>
+  <!-- <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.co.jp/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kixonn.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav> -->
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/13/org-on-octopress/">Emacs の Org-mode で Octopress を更新する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-13T01:26:00+09:00" pubdate data-updated="true">Jul 13<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+org-mode で、 octopress を記述する方法をまとめようとしていて、めとめられていなかったのでまとめてみた。
+ちなみに、初期の頃からずっと org-mode で書いている。
+すでに紹介されている方法 <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> と差分が少しあったので注意。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">導入</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+octopress は何をやっているのかというと、 markdown 記法で書かれた <code>.markdown</code> ファイルを投稿しているらしい。
+それで、 org-mode を用いて octopress には emacs の org-mode で作成したファイルを markdown 記法のファイルに変換してあげようという話。
+octopress と emacs 24.2 以降の導入が完了していることを前提に話を進める。
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">準備</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+org-mode 記法のファイルを markdown で出力して、それを <code>rake gen_deploy</code> すればよいというおはなしで、特に octopress 側の設定について触る必要はないのだけれど、 <code>rake new_post</code> したときに雛形の .org ファイルが生成されれば嬉しいよね。ということで、そのようにするように <code>Rakefile</code> に以下の変更を加える。
+</p>
+<figure class='code'><figcaption><span> (Rakefile.patch)</span> <a href='/downloads/code/./20130713/Rakefile.patch'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="o">---</span> <span class="no">Rakefile</span>
+</span><span class='line'><span class="o">+++</span> <span class="no">Rakefile</span><span class="o">.</span><span class="n">orig</span>
+</span><span class='line'><span class="err">@@</span> <span class="o">-</span><span class="mi">9</span><span class="p">,</span><span class="mi">25</span> <span class="o">+</span><span class="mi">9</span><span class="p">,</span><span class="mi">22</span> <span class="err">@@</span>
+</span><span class='line'> <span class="n">document_root</span>  <span class="o">=</span> <span class="s2">&quot;~/website.com/&quot;</span>
+</span><span class='line'> <span class="n">rsync_delete</span>   <span class="o">=</span> <span class="kp">false</span>
+</span><span class='line'> <span class="n">rsync_args</span>     <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Any extra arguments to pass to rsync</span>
+</span><span class='line'><span class="o">-</span><span class="n">deploy_default</span> <span class="o">=</span> <span class="s2">&quot;push&quot;</span>
+</span><span class='line'><span class="o">+</span><span class="n">deploy_default</span> <span class="o">=</span> <span class="s2">&quot;rsync&quot;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1">## -- Misc Configs -- ##</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">stash_dir</span>       <span class="o">=</span> <span class="s2">&quot;_stash&quot;</span>    <span class="c1"># directory to stash posts for speedy generation</span>
+</span><span class='line'> <span class="n">posts_dir</span>       <span class="o">=</span> <span class="s2">&quot;_posts&quot;</span>    <span class="c1"># directory for blog files</span>
+</span><span class='line'><span class="o">-</span><span class="n">org_posts_dir</span>   <span class="o">=</span> <span class="s2">&quot;org_posts&quot;</span>
+</span><span class='line'> <span class="n">themes_dir</span>      <span class="o">=</span> <span class="s2">&quot;.themes&quot;</span>   <span class="c1"># directory for blog files</span>
+</span><span class='line'><span class="o">-</span><span class="c1"># new_post_ext    = &quot;markdown&quot;  # default new post file extension when using the new_post task</span>
+</span><span class='line'><span class="o">-</span><span class="c1"># new_page_ext    = &quot;markdown&quot;  # default new page file extension when using the new_page task</span>
+</span><span class='line'><span class="o">-</span><span class="n">new_post_ext</span>    <span class="o">=</span> <span class="s2">&quot;org&quot;</span>  <span class="c1"># default new post file extension when using the new_post task</span>
+</span><span class='line'><span class="o">-</span><span class="n">new_page_ext</span>    <span class="o">=</span> <span class="s2">&quot;org&quot;</span>  <span class="c1"># default new page file extension when using the new_page task</span>
+</span><span class='line'><span class="o">+</span><span class="n">new_post_ext</span>    <span class="o">=</span> <span class="s2">&quot;markdown&quot;</span>  <span class="c1"># default new post file extension when using the new_post task</span>
+</span><span class='line'><span class="o">+</span><span class="n">new_page_ext</span>    <span class="o">=</span> <span class="s2">&quot;markdown&quot;</span>  <span class="c1"># default new page file extension when using the new_page task</span>
+</span><span class='line'> <span class="n">server_port</span>     <span class="o">=</span> <span class="s2">&quot;4000&quot;</span>      <span class="c1"># port for preview server eg. localhost:4000</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@@</span> <span class="o">-</span><span class="mi">101</span><span class="p">,</span><span class="mi">16</span> <span class="o">+</span><span class="mi">98</span><span class="p">,</span><span class="mi">13</span> <span class="err">@@</span>
+</span><span class='line'>     <span class="n">title</span> <span class="o">=</span> <span class="n">get_stdin</span><span class="p">(</span><span class="s2">&quot;Enter a title for your post: &quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="k">end</span>
+</span><span class='line'>   <span class="k">raise</span> <span class="s2">&quot;### You haven&#39;t set anything up yet. First run `rake install` to set up an Octopress theme.&quot;</span> <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">directory?</span><span class="p">(</span><span class="n">source_dir</span><span class="p">)</span>
+</span><span class='line'><span class="o">-</span>  <span class="c1"># mkdir_p &quot;#{source_dir}/#{posts_dir}&quot;</span>
+</span><span class='line'><span class="o">-</span>  <span class="n">mkdir_p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">org_posts_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="o">-</span>  <span class="c1"># filename = &quot;#{source_dir}/#{posts_dir}/#{Time.now.strftime(&#39;%Y-%m-%d&#39;)}-#{title.to_url}.#{new_post_ext}&quot;</span>
+</span><span class='line'><span class="o">-</span>  <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">org_posts_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">to_url</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">new_post_ext</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="o">+</span>  <span class="n">mkdir_p</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="o">+</span>  <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">source_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="n">posts_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">to_url</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="n">new_post_ext</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>   <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</span><span class='line'>     <span class="nb">abort</span><span class="p">(</span><span class="s2">&quot;rake aborted!&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">ask</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> already exists. Do you want to overwrite?&quot;</span><span class="p">,</span> <span class="o">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="o">]</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span>
+</span><span class='line'>   <span class="k">end</span>
+</span><span class='line'>   <span class="nb">puts</span> <span class="s2">&quot;Creating new post: </span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>   <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">post</span><span class="o">|</span>
+</span><span class='line'><span class="o">-</span>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;#+BEGIN_HTML&quot;</span>
+</span><span class='line'>     <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
+</span><span class='line'>     <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;layout: post&quot;</span>
+</span><span class='line'>     <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;title: </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">title</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/&amp;/</span><span class="p">,</span><span class="s1">&#39;&amp;amp;&#39;</span><span class="p">)</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="err">@@</span> <span class="o">-</span><span class="mi">118</span><span class="p">,</span><span class="mi">7</span> <span class="o">+</span><span class="mi">112</span><span class="p">,</span><span class="mi">6</span> <span class="err">@@</span>
+</span><span class='line'>     <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;comments: true&quot;</span>
+</span><span class='line'>     <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;categories: &quot;</span>
+</span><span class='line'>     <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;---&quot;</span>
+</span><span class='line'><span class="o">-</span>    <span class="n">post</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;#+END_HTML&quot;</span>
+</span><span class='line'>   <span class="k">end</span>
+</span><span class='line'> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@@</span> <span class="o">-</span><span class="mi">254</span><span class="p">,</span><span class="mi">18</span> <span class="o">+</span><span class="mi">247</span><span class="p">,</span><span class="mi">21</span> <span class="err">@@</span>
+</span><span class='line'> <span class="n">desc</span> <span class="s2">&quot;deploy public directory to github pages&quot;</span>
+</span><span class='line'> <span class="n">multitask</span> <span class="ss">:push</span> <span class="k">do</span>
+</span><span class='line'>   <span class="nb">puts</span> <span class="s2">&quot;## Deploying branch to Github Pages &quot;</span>
+</span><span class='line'><span class="o">+</span>  <span class="nb">puts</span> <span class="s2">&quot;## Pulling any updates from Github Pages &quot;</span>
+</span><span class='line'><span class="o">+</span>  <span class="n">cd</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">deploy_dir</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">do</span>
+</span><span class='line'><span class="o">+</span>    <span class="nb">system</span> <span class="s2">&quot;git pull&quot;</span>
+</span><span class='line'><span class="o">+</span>  <span class="k">end</span>
+</span><span class='line'>   <span class="p">(</span><span class="no">Dir</span><span class="o">[</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">deploy_dir</span><span class="si">}</span><span class="s2">/*&quot;</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="n">rm_rf</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>   <span class="ss">Rake</span><span class="p">:</span><span class="ss">:Task</span><span class="o">[</span><span class="ss">:copydot</span><span class="o">].</span><span class="n">invoke</span><span class="p">(</span><span class="n">public_dir</span><span class="p">,</span> <span class="n">deploy_dir</span><span class="p">)</span>
+</span><span class='line'><span class="o">-</span>  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## copying </span><span class="si">#{</span><span class="n">public_dir</span><span class="si">}</span><span class="s2"> to </span><span class="si">#{</span><span class="n">deploy_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="o">+</span>  <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## Copying </span><span class="si">#{</span><span class="n">public_dir</span><span class="si">}</span><span class="s2"> to </span><span class="si">#{</span><span class="n">deploy_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>   <span class="n">cp_r</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">public_dir</span><span class="si">}</span><span class="s2">/.&quot;</span><span class="p">,</span> <span class="n">deploy_dir</span>
+</span><span class='line'>   <span class="n">cd</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">deploy_dir</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">do</span>
+</span><span class='line'><span class="o">-</span>    <span class="nb">system</span> <span class="s2">&quot;git add .&quot;</span>
+</span><span class='line'><span class="o">-</span>    <span class="nb">system</span> <span class="s2">&quot;git add -u&quot;</span>
+</span><span class='line'><span class="o">+</span>    <span class="nb">system</span> <span class="s2">&quot;git add -A&quot;</span>
+</span><span class='line'>     <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## Commiting: Site updated at </span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>     <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Site updated at </span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">utc</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>     <span class="nb">system</span> <span class="s2">&quot;git commit -m </span><span class="se">\&quot;</span><span class="si">#{</span><span class="n">message</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+</span><span class='line'>     <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## Pushing generated </span><span class="si">#{</span><span class="n">deploy_dir</span><span class="si">}</span><span class="s2"> website&quot;</span>
+</span><span class='line'><span class="o">-</span>    <span class="nb">system</span> <span class="s2">&quot;git push origin </span><span class="si">#{</span><span class="n">deploy_branch</span><span class="si">}</span><span class="s2"> --force&quot;</span>
+</span><span class='line'><span class="o">+</span>    <span class="nb">system</span> <span class="s2">&quot;git push origin </span><span class="si">#{</span><span class="n">deploy_branch</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>     <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## Github Pages deploy complete&quot;</span>
+</span><span class='line'>   <span class="k">end</span>
+</span><span class='line'> <span class="k">end</span>
+</span><span class='line'><span class="err">@@</span> <span class="o">-</span><span class="mi">312</span><span class="p">,</span><span class="mi">9</span> <span class="o">+</span><span class="mi">308</span><span class="p">,</span><span class="mi">15</span> <span class="err">@@</span>
+</span><span class='line'>   <span class="k">else</span>
+</span><span class='line'>     <span class="nb">puts</span> <span class="s2">&quot;Enter the read/write url for your repository&quot;</span>
+</span><span class='line'>     <span class="nb">puts</span> <span class="s2">&quot;(For example, &#39;git@github.com:your_username/your_username.github.io)&quot;</span>
+</span><span class='line'><span class="o">+</span>    <span class="nb">puts</span> <span class="s2">&quot;           or &#39;https://github.com/your_username/your_username.github.io&#39;)&quot;</span>
+</span><span class='line'>     <span class="n">repo_url</span> <span class="o">=</span> <span class="n">get_stdin</span><span class="p">(</span><span class="s2">&quot;Repository url: &quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="k">end</span>
+</span><span class='line'><span class="o">-</span>  <span class="n">user</span> <span class="o">=</span> <span class="n">repo_url</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/:([^\/]+)/</span><span class="p">)</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+</span><span class='line'><span class="o">+</span>  <span class="n">protocol</span> <span class="o">=</span> <span class="p">(</span><span class="n">repo_url</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/(^git)@/</span><span class="p">)</span><span class="o">.</span><span class="n">nil?</span><span class="p">)</span> <span class="p">?</span> <span class="s1">&#39;https&#39;</span> <span class="p">:</span> <span class="s1">&#39;git&#39;</span>
+</span><span class='line'><span class="o">+</span>  <span class="k">if</span> <span class="n">protocol</span> <span class="o">==</span> <span class="s1">&#39;git&#39;</span>
+</span><span class='line'><span class="o">+</span>    <span class="n">user</span> <span class="o">=</span> <span class="n">repo_url</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/:([^\/]+)/</span><span class="p">)</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+</span><span class='line'><span class="o">+</span>  <span class="k">else</span>
+</span><span class='line'><span class="o">+</span>    <span class="n">user</span> <span class="o">=</span> <span class="n">repo_url</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/github\.com\/([^\/]+)/</span><span class="p">)</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+</span><span class='line'><span class="o">+</span>  <span class="k">end</span>
+</span><span class='line'>   <span class="n">branch</span> <span class="o">=</span> <span class="p">(</span><span class="n">repo_url</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/\/[\w-]+\.github\.(?:io|com)/</span><span class="p">)</span><span class="o">.</span><span class="n">nil?</span><span class="p">)</span> <span class="p">?</span> <span class="s1">&#39;gh-pages&#39;</span> <span class="p">:</span> <span class="s1">&#39;master&#39;</span>
+</span><span class='line'>   <span class="n">project</span> <span class="o">=</span> <span class="p">(</span><span class="n">branch</span> <span class="o">==</span> <span class="s1">&#39;gh-pages&#39;</span><span class="p">)</span> <span class="p">?</span> <span class="n">repo_url</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/\/([^\.]+)/</span><span class="p">)</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="p">:</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>   <span class="k">unless</span> <span class="p">(</span><span class="sb">`git remote -v`</span> <span class="o">=~</span> <span class="sr">/origin.+?octopress(?:\.git)?/</span><span class="p">)</span><span class="o">.</span><span class="n">nil?</span>
+</span></code></pre></td></tr></table></div></figure>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3">記事を作成</h2>
+<div class="outline-text-2" id="text-3">
+<pre class="example">
+$ rake new_post
+Enter a title for your post: org_on_octopress
+mkdir -p source/org_posts
+Creating new post: source/org_posts/2013-07-13-org-on-octopress.org
+</pre>
+<p>
+すると、 <code>./source/org_posts/</code> 以下に記事の雛形となるファイルが作成される。
+<code>./source/_posts/</code> 以下に変更は加わらない。
+<code>./source/org_posts/</code> の <code>.org</code> ファイルを編集して、 <code>C-c</code> <code>C-e</code> <code>P</code> <code>f</code> で <code>./source/_posts/</code> 以下に <code>markdown</code> 記法に変換したファイルを出力できる。
+<code>.markdown</code> のファイルが出来てしまえばあとは通常通りで、
+</p>
+
+<pre class="example">
+$ rake gen_deploy
+</pre>
+
+<p>
+すればよいだけ。おわり。
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4">参照</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://yunojy.github.io/blog/2013/02/11/emacs-de-github-blog-sono2-org-mode/">http://yunojy.github.io/blog/2013/02/11/emacs-de-github-blog-sono2-org-mode/</a> &#8220;emacs@がんばらない。なまけもの必見！今度こそ継続できる Blog を 10 分でGithub に開設する。もちろん無料 - org-mode 編 - develog.me&#8221;
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/11/split-by-regex-iterator-cpp/">C++11 の Std::regex_iterator について</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-11T15:19:00+09:00" pubdate data-updated="true">Jul 11<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+最近、 C++11 まわりを色々と調べていて、標準の正規表現ライブラリ <code>std::regex</code> に関するメモ。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">準備</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+clang 3.3 にて C++11 がフルサポートされているので、 accept<sub>keyword</sub> に追加して emerge する。
+clang はオプションを付与しないと gcc の標準ライブラリを見に行くので、 libcxx も emerge しておく。
+</p>
+
+<pre class="example">
+# emerge =clang-3.3 libcxx --autounmask-write
+# etc-update
+# emerge =clang-3.3 libcxx
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">文字列の分割</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+C++03 までは、 boost を使用せずに文字列の分割を行うのであれば、例えばスペースで文字列を区切る場合、以下のように自分で一から書くというのがセオリーの一つだった <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+<figure class='code'><figcaption><span> (split_string01.cc)</span> <a href='/downloads/code/20130711/split_string01.cc'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;vector&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">split</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">str</span><span class="p">,</span> <span class="kt">char</span> <span class="n">delim</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">string</span> <span class="n">text</span> <span class="o">=</span> <span class="s">&quot;Thu Jan  1 00:00:00 UTC 1970&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">vec</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="sc">&#39; &#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">vec</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">it</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">split</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">str</span><span class="p">,</span> <span class="kt">char</span> <span class="n">delim</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">res</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">size_t</span> <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">found</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">while</span><span class="p">((</span><span class="n">found</span> <span class="o">=</span> <span class="n">str</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="n">delim</span><span class="p">,</span> <span class="n">current</span><span class="p">))</span> <span class="o">!=</span> <span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">found</span> <span class="o">-</span> <span class="n">current</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">res</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">found</span> <span class="o">-</span> <span class="n">current</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">current</span> <span class="o">=</span> <span class="n">found</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">res</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">str</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="n">current</span><span class="p">));</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>
+C++11 からは標準正規表現ライブラリ <code>std::regex</code> を通して、以下のように書くことができる <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> 。
+</p>
+
+<figure class='code'><figcaption><span> (split_string02.cc)</span> <a href='/downloads/code/20130711/split_string02.cc'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;regex&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">string</span> <span class="n">text</span> <span class="o">=</span> <span class="s">&quot;Thu Jan  1 00:00:00 UTC 1970&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">regex</span> <span class="n">ws_re</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">s+&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">sregex_token_iterator</span> <span class="n">it_begin</span> <span class="o">=</span> <span class="n">sregex_token_iterator</span><span class="p">(</span><span class="n">text</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">text</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">ws_re</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">sregex_token_iterator</span> <span class="n">it_end</span> <span class="o">=</span> <span class="n">sregex_token_iterator</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="n">sregex_token_iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">it_begin</span><span class="p">;</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">it_end</span><span class="p">;</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">it</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>
+綺麗で見易いですよね。ちなみに、以下のように書くとハマるので注意が必要。
+</p>
+
+<figure class='code'><figcaption><span> (split_string02_dumb.cc)</span> <a href='/downloads/code/20130711/split_string02_dumb.cc'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>  <span class="n">sregex_token_iterator</span> <span class="n">it_begin</span> <span class="o">=</span> <span class="n">sregex_token_iterator</span> <span class="p">(</span><span class="n">text</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">text</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">regex</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">s+&quot;</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://shnya.jp/blog/?p=195">http://shnya.jp/blog/?p=195</a> C++ で文字列の split | Story of Your Life
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="http://www.cplusplus.com/reference/regex/regex_token_iterator/regex_token_iterator/">http://www.cplusplus.com/reference/regex/regex_token_iterator/regex_token_iterator/</a> regex<sub>token</sub><sub>iterator</sub>::regex<sub>token</sub><sub>iterat</sub>&#x2026; - C++ Reference
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/26/imap-folder-encoding/">IMAP フォルダ名をデコードする</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-26T20:26:00+09:00" pubdate data-updated="true">Jun 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+先日、設定した mu4e について、 Gmail アカウントを扱おうとすると、 IMAP フォルダが文字化けする事案が発生していたので、これを修正。
+結論からいえば Gmail の設定から [言語] を [English (US)] とかに変更すれば、 再度、 <code>offlineimap</code> 実行したときに <code>&amp;U9dP4TDIMOwwpA0 (受信トレイ)</code> といったローカルの IMAP フォルダでの表示が <code>INBOX</code> といった Ascii 文字に変更されるので、きれいに解決したいのであればそのような対応で問題ない。
+けれども、 Gmail の表示言語を日本語のまま、使うには上記では問題がある (クライアントセットアップしてるのにそんなことある必要性があるかどうかは別として) ．
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">UTF-7 文字のデコード</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+国際的なメールボックス名は <a href="http://www.lins.jp/~obata/imap/rfc/rfc2060ja.html#s5.1.3">RFC 2060</a> 標準化規格によって、 UTF-7 でエンコードされているので、実際のフォルダ名を知るにはこれをデコードしなければならない。
+Ruby を用いてデコードするには以下でよいらしい <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+<figure class='code'><figcaption><span> (bash)</span> <a href='/downloads/code/20130626/bash'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ruby -r net/imap -e <span class="s1">&#39;puts Net::IMAP.decode_utf7 (&quot;&amp;U9dP4TDIMOwwpA-&quot;)&#39;</span>
+</span><span class='line'>受信トレイ
+</span><span class='line'><span class="nv">$ </span>ruby -r net/imap -e <span class="s1">&#39;puts Net::IMAP.encode_utf7 (&quot;受信トレイ&quot;)&#39;</span>
+</span><span class='line'>&amp;U9dP4TDIMOwwpA-
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+それで、以下のような感じで、 <code>emacs.el</code> に設定すればよいのだけれど。
+</p>
+<figure class='code'><figcaption><span> (emacs)</span> <a href='/downloads/code/20130626/emacs'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">mu4e-inbox-folder</span> <span class="s">&quot;/Gmail/&amp;U9dP4TDIMOwwpA-&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+<p>
+これだと、フォルダ移動のときのフォルダ名入力のときに面倒なので、エイリアス作成するか本を正せば Gmail の言語を変更した方がよい。
+</p>
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://star.ap.teacup.com/1yen/1063.html">http://star.ap.teacup.com/1yen/1063.html</a> IMAP の日本語フォルダ | どんなことでも
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/15/mu4e-settings/">複数アカウントを Mu4e で扱うときの設定</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-15T01:35:00+09:00" pubdate data-updated="true">Jun 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+メーラといえば、今日まで emacs の mew を使っていたのだけれど、メールの作成時にファイルを添付して送信しようとするとミニバッファに <code>nil</code> とだけ表示されてファイルを添付したメールを作成することができなかった。
+いつもはファイルを添付したメールを作成するときには、わざわざ sylpheed を使っていたのだけれど受信箱にあるメールに対して返信メールを書こうとすると、プロセスが反応しなくなってしまうという問題が最近になって、発生するようになってしまった。
+そこで、この際メールクライアントを刷新しようと思ったのだけれど、候補としては GUI のものは用いたくなかった (GUI は基本的に重いし、 mew を使っているとキーボードで操作できないことに使い心地の悪さを感じる) ので、ハッカーに代表されるツールとして定評のある mutt を選んでみた。
+</p>
+
+
+
+
+<p>
+fetchmail + procmail + mutt な環境を三日ぐらいかけて構築したはよいものの、 mew のように受信したメールを見ながら返信を書くことができなかったり、エディタに emacs を設定しても編集しづらかったり、カスタマイズするべき項目が多すぎたりしたために、さらに別のクライアントを探してみた。
+それで、 @myuhe さんが mu4e について言及されていたのをふと思いだしたので、導入してみた。
+結果、結構よい感じに使用できているので導入手順と設定をメモ。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">パッケージインストール</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+あらかじめ use フラグに <code>emacs</code> <code>ssl</code> を追加しておく。
+マニュアル <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> を見て依存するパッケージを確認して、インストールする。
+</p>
+
+<pre class="example">
+# emerge gmime xapian mu offlineimap
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">offlineimap の設定</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+基本的に mu4e は mu をバインドしてメールを閲覧するものであるため、メールは別で取得してくる必要がある。
+それを行ってくれるのが offlineimap コマンドで、取得先のメールサーバの設定、メールの保存先を指定する設定ファイルが <code>.offlineimaprc</code> 。
+以下に複数アカウントを扱うサンプルファイルを記しておく。
+</p>
+
+<figure class='code'><figcaption><span> (offlineimaprc)</span> <a href='/downloads/code/20130615/offlineimaprc'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>general<span class="o">]</span>
+</span><span class='line'><span class="nv">accounts</span> <span class="o">=</span> Main
+</span><span class='line'><span class="nv">maxsyncaccounts</span> <span class="o">=</span> 3
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Account Main<span class="o">]</span>
+</span><span class='line'><span class="nv">localrepository</span> <span class="o">=</span> LocalMain
+</span><span class='line'><span class="nv">remoterepository</span> <span class="o">=</span> RemoteMain
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Repository LocalMain<span class="o">]</span>
+</span><span class='line'><span class="nb">type</span> <span class="o">=</span> Maildir
+</span><span class='line'><span class="nv">localfolders</span> <span class="o">=</span> ~/Maildir/Main
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Repository RemoteMain<span class="o">]</span>
+</span><span class='line'><span class="nb">type</span> <span class="o">=</span> IMAP
+</span><span class='line'><span class="nv">remotehost</span> <span class="o">=</span> main.co.jp
+</span><span class='line'><span class="nv">remoteuser</span> <span class="o">=</span> kdkk-
+</span><span class='line'><span class="nv">remotepass</span> <span class="o">=</span> ********
+</span><span class='line'><span class="nv">ssl</span> <span class="o">=</span> yes
+</span><span class='line'><span class="nv">cert_fingerprint</span> <span class="o">=</span> ****************************************
+</span><span class='line'><span class="nv">maxconnections</span> <span class="o">=</span> 1
+</span><span class='line'><span class="nv">realdelete</span> <span class="o">=</span> no
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Account Gmail<span class="o">]</span>
+</span><span class='line'><span class="nv">localrepository</span> <span class="o">=</span> LocalGmail
+</span><span class='line'><span class="nv">remoterepository</span> <span class="o">=</span> RemoteGmail
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Repository LocalGmail<span class="o">]</span>
+</span><span class='line'><span class="nb">type</span> <span class="o">=</span> Maildir
+</span><span class='line'><span class="nv">localfolders</span> <span class="o">=</span> ~/Maildir/Gmail
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Repository RemoteGmail<span class="o">]</span>
+</span><span class='line'><span class="nb">type</span> <span class="o">=</span> IMAP
+</span><span class='line'><span class="nv">remotehost</span> <span class="o">=</span> imap.gmail.com
+</span><span class='line'><span class="nv">remoteuser</span> <span class="o">=</span> ********@gmail.com
+</span><span class='line'><span class="nv">remotepass</span> <span class="o">=</span> ********
+</span><span class='line'><span class="nv">ssl</span> <span class="o">=</span> yes
+</span><span class='line'><span class="nv">cert_fingerprint</span> <span class="o">=</span> ****************************************
+</span><span class='line'><span class="nv">maxconnections</span> <span class="o">=</span> 1
+</span><span class='line'><span class="nv">realdelete</span> <span class="o">=</span> no
+</span></code></pre></td></tr></table></div></figure>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3">offlineimpap の実行</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+offlineimap の設定が完了したら以下のコマンドを実行して、メールを imap メールサーバから取得し、インデックスを作成しておく。
+</p>
+<pre class="example">
+$ imapoffline # [general] の accounts で設定されているアカウントからのメールを取得
+$ imapoffline -a gMail
+$ mu index    # インデックスの作成
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4">mu4e の設定</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+以下を <code>.emacs.el</code> に書く。複数アカウントを扱う方法はマニュアルを参照 <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> 。
+</p>
+<figure class='code'><figcaption><span> (mu4e_config.el)</span> <a href='/downloads/code/20130615/mu4e_config.el'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">require</span> <span class="ss">&#39;mu4e</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">require</span> <span class="ss">&#39;smtpmail</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">mu4e-use-fancy-chars</span> <span class="nv">nil</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">mu4e-attachment-dir</span> <span class="s">&quot;~/Downloads&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">mu4e-view-show-images</span> <span class="nv">t</span>
+</span><span class='line'>      <span class="nv">mu4e-view-image-max-width</span> <span class="mi">800</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">set-language-environment</span> <span class="s">&quot;UTF-8&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">message-kill-buffer-on-exit</span> <span class="nv">t</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">mu4e-maildir</span> <span class="s">&quot;~/Maildir&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">message-send-mail-function</span> <span class="ss">&#39;smtpmail-send-it</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">defvar</span> <span class="nv">my-mu4e-account-alist</span>
+</span><span class='line'>      <span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;Main&quot;</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">user-mail-address</span> <span class="s">&quot;kdkk-@main.co.jp&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-inbox-folder</span> <span class="s">&quot;/Main/INBOX&quot;</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">(</span><span class="nf">mu4e-sent-folder</span> <span class="s">&quot;/Main/Sent&quot;</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">(</span><span class="nf">mu4e-drafts-folder</span> <span class="s">&quot;/Main/Drafts&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-trash-folder</span>  <span class="s">&quot;/Main/Trash&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-get-mail-command</span> <span class="s">&quot;offlineimap&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-update-interval</span> <span class="mi">300</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">user-full-name</span>  <span class="s">&quot;kdkk-&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">smtpmail-debug-info</span> <span class="nv">t</span><span class="p">)</span> <span class="c1">; only to debug problems</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">smtpmail-stream-type</span> <span class="nv">ssl</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">starttls-use-gnutls</span> <span class="nv">nil</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">smtpmail-smtp-server</span> <span class="s">&quot;main.co.jp&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">smtpmail-smtp-service</span> <span class="mi">465</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">message-signature</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">concat</span>
+</span><span class='line'>     <span class="s">&quot;kdkk-&lt;kdkk-@main.co.jp&gt;&quot;</span>
+</span><span class='line'>     <span class="s">&quot;\n&quot;</span><span class="p">)))</span>
+</span><span class='line'>        <span class="p">(</span><span class="s">&quot;Gmail&quot;</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-inbox-folder</span> <span class="s">&quot;/Gmail/INBOX&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-drafts-folder</span> <span class="s">&quot;/[Gmail].Drafts&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-sent-folder</span>   <span class="s">&quot;/[Gmail].Sent Mail&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-trash-folder</span>  <span class="s">&quot;/[Gmail].Trash&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-get-mail-command</span> <span class="s">&quot;offlineimap -a Gmail&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">mu4e-update-interval</span> <span class="mi">300</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">(</span><span class="nf">user-mail-address</span> <span class="s">&quot;****@gmail.com&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">starttls-use-gnutls</span> <span class="nv">t</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">smtpmail-default-smtp-server</span> <span class="s">&quot;smtp.gmail.com&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">smtpmail-smtp-server</span> <span class="s">&quot;smtp.gmail.com&quot;</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">smtpmail-smtp-service</span> <span class="mi">587</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">message-signature</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">concat</span>
+</span><span class='line'>     <span class="s">&quot;kdkk-&lt;****@gmail.com&gt;&quot;</span>
+</span><span class='line'>     <span class="s">&quot;\n&quot;</span><span class="p">)))</span>
+</span><span class='line'><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="nf">defun</span> <span class="nv">my-mu4e-set-account</span> <span class="p">()</span>
+</span><span class='line'>  <span class="s">&quot;Set the account for composing a message.&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">let* </span><span class="p">((</span><span class="nf">account</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">if </span><span class="nv">mu4e-compose-parent-message</span>
+</span><span class='line'>        <span class="p">(</span><span class="k">let </span><span class="p">((</span><span class="nf">maildir</span> <span class="p">(</span><span class="nf">mu4e-message-field</span> <span class="nv">mu4e-compose-parent-message</span> <span class="nv">:maildir</span><span class="p">)))</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">string-match</span> <span class="s">&quot;/\\(.*?\\)/&quot;</span> <span class="nv">maildir</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">match-string</span> <span class="mi">1</span> <span class="nv">maildir</span><span class="p">))</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">completing-read</span> <span class="p">(</span><span class="nf">format</span> <span class="s">&quot;Compose with account: (%s) &quot;</span>
+</span><span class='line'>                   <span class="p">(</span><span class="nf">mapconcat</span> <span class="o">#&#39;</span><span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">var</span><span class="p">)</span> <span class="p">(</span><span class="nb">car </span><span class="nv">var</span><span class="p">))</span> <span class="nv">my-mu4e-account-alist</span> <span class="s">&quot;/&quot;</span><span class="p">))</span>
+</span><span class='line'>               <span class="p">(</span><span class="nf">mapcar</span> <span class="o">#&#39;</span><span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">var</span><span class="p">)</span> <span class="p">(</span><span class="nb">car </span><span class="nv">var</span><span class="p">))</span> <span class="nv">my-mu4e-account-alist</span><span class="p">)</span>
+</span><span class='line'>               <span class="nv">nil</span> <span class="nv">t</span> <span class="nv">nil</span> <span class="nv">nil</span> <span class="p">(</span><span class="nb">caar </span><span class="nv">my-mu4e-account-alist</span><span class="p">))))</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">account-vars</span> <span class="p">(</span><span class="nb">cdr </span><span class="p">(</span><span class="nb">assoc </span><span class="nv">account</span> <span class="nv">my-mu4e-account-alist</span><span class="p">))))</span>
+</span><span class='line'>    <span class="p">(</span><span class="k">if </span><span class="nv">account-vars</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">mapc</span> <span class="o">#&#39;</span><span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">var</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">(</span><span class="nf">set</span> <span class="p">(</span><span class="nb">car </span><span class="nv">var</span><span class="p">)</span> <span class="p">(</span><span class="nb">cadr </span><span class="nv">var</span><span class="p">)))</span>
+</span><span class='line'>        <span class="nv">account-vars</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">error</span> <span class="s">&quot;No email account found&quot;</span><span class="p">))))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="nf">add-hook</span> <span class="ss">&#39;mu4e-compose-pre-hook</span> <span class="ss">&#39;my-mu4e-set-account</span><span class="p">)</span>
+</span><span class='line'><span class="c1">;; don&#39;t save message to Sent Messages, Gmail/IMAP takes care of this</span>
+</span><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">mu4e-sent-messages-behavior</span> <span class="ss">&#39;delete</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">;; setup some handy shortcuts</span>
+</span><span class='line'><span class="c1">;; you can quickly switch to your Inbox -- press ``ji&#39;&#39;</span>
+</span><span class='line'><span class="c1">;; then, when you want archive some messages, move them to</span>
+</span><span class='line'><span class="c1">;; the &#39;All Mail&#39; folder by pressing ``ma&#39;&#39;.</span>
+</span><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">mu4e-maildir-shortcuts</span>
+</span><span class='line'>      <span class="o">&#39;</span><span class="p">(</span> <span class="p">(</span><span class="s">&quot;/Main/INBOX&quot;</span> <span class="o">.</span> <span class="nv">?i</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">(</span><span class="s">&quot;/Gmail/INBOX&quot;</span> <span class="o">.</span> <span class="nv">?g</span><span class="p">)</span>
+</span><span class='line'><span class="p">))</span>
+</span><span class='line'><span class="c1">;; Attach_File_with_Dired</span>
+</span><span class='line'><span class="p">(</span><span class="nf">require</span> <span class="ss">&#39;gnus-dired</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">defun</span> <span class="nv">gnus-dired-mail-buffers</span> <span class="p">()</span>
+</span><span class='line'>  <span class="s">&quot;Return a list of active message buffers.&quot;</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">let </span><span class="p">(</span><span class="nf">buffers</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">save-current-buffer</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">dolist</span> <span class="p">(</span><span class="nf">buffer</span> <span class="p">(</span><span class="nf">buffer-list</span> <span class="nv">t</span><span class="p">))</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">set-buffer</span> <span class="nv">buffer</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">(</span><span class="nf">when</span> <span class="p">(</span><span class="k">and </span><span class="p">(</span><span class="nf">derived-mode-p</span> <span class="ss">&#39;message-mode</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">(</span><span class="nf">null</span> <span class="nv">message-sent-message-via</span><span class="p">))</span>
+</span><span class='line'>        <span class="p">(</span><span class="nf">push</span> <span class="p">(</span><span class="nf">buffer-name</span> <span class="nv">buffer</span><span class="p">)</span> <span class="nv">buffers</span><span class="p">))))</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">nreverse</span> <span class="nv">buffers</span><span class="p">)))</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">gnus-dired-mail-mode</span> <span class="ss">&#39;mu4e-user-agent</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">add-hook</span> <span class="ss">&#39;dired-mode-hook</span> <span class="ss">&#39;turn-on-gnus-dired-mode</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+</div>
+</div>
+
+
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5">mu4e を使う</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+<code>M-x</code> を押して、 <code>mu4e</code> を打って <code>RET</code> 。
+あとは指示通りに使えばよい。 smtp を ssl から送信する方法がよく分からなくて詰んでた。マニュアルにも見当たらなかったので手探り状態。
+587 ポートは管理者じゃないので変更できない状態でした。
+</p>
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://www.djcbsoftware.nl/code/mu/mu4e/Installation.html#Installation">http://www.djcbsoftware.nl/code/mu/mu4e/Installation.html#Installation</a> &#8220;Installation - mu4e user manual&#8221;
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="http://www.djcbsoftware.nl/code/mu/mu4e/Multiple-accounts.html#Multiple-accounts">http://www.djcbsoftware.nl/code/mu/mu4e/Multiple-accounts.html#Multiple-accounts</a> &#8220;Multiple accounts - mu4e user manual&#8221;
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/04/denied-printing-pdf-file/">Pdf ファイルの印刷を不可設定にする</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-04T11:00:00+09:00" pubdate data-updated="true">Jun 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+pdf ファイルの印刷を許可しないように設定しなければならない案件があったので、メモ。
+結論だけ、言うと <code>pdftk</code> で以下のコマンドを叩いてやるとできる。
+</p>
+
+
+<pre class="example">
+pdftk input.pdf output output.pdf owner_pw hogehoge
+</pre>
+
+
+
+
+<p>
+どうせやるなら、ランダムな文字列をパスワードに設定したいので以下のシェルスクリプトにまとめてみた。
+</p>
+
+
+
+
+<p>
+なお、ランダムな文字列を生成するシェルスクリプトは <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> から拝借した。
+</p>
+
+
+
+
+<figure class='code'><figcaption><span> (pdftkpw.sh)</span> <a href='/downloads/code/20130604/pdftkpw.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'><span class="nv">PDFIN</span><span class="o">=</span><span class="nv">$1</span>
+</span><span class='line'><span class="nv">PDFOUT</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$1</span> | sed -e <span class="s2">&quot;s/\.[^.]*$/pw.pdf/&quot;</span><span class="sb">`</span>
+</span><span class='line'><span class="nv">len</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$RANDOM</span> % 5 + 14 | bc<span class="sb">`</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span> -z <span class="nv">$len</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nv">len</span><span class="o">=</span><span class="s2">&quot;8&quot;</span>
+</span><span class='line'><span class="nv">char</span><span class="o">=</span><span class="s1">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890&#39;</span>;
+</span><span class='line'><span class="nv">i</span><span class="o">=</span>1
+</span><span class='line'><span class="k">while</span> <span class="o">[</span> <span class="nv">$i</span> -le <span class="nv">$len</span> <span class="o">]</span>; <span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="nv">dm</span><span class="o">=</span><span class="k">$((</span> <span class="o">(</span>RANDOM <span class="o">%</span> <span class="k">${#</span><span class="nv">char</span><span class="k">}</span><span class="o">)</span> <span class="k">))</span>
+</span><span class='line'>        <span class="nv">str</span><span class="o">=</span><span class="s2">&quot;${str}${char:${dm}:1}&quot;</span>
+</span><span class='line'>      <span class="nv">i</span><span class="o">=</span><span class="k">$((</span> i+1 <span class="k">))</span>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">PW</span><span class="o">=</span><span class="s2">&quot;$str&quot;</span>
+</span><span class='line'><span class="nv">PW</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="s2">&quot;fjajfpsjpdsgs&quot;</span><span class="sb">`</span>
+</span><span class='line'>pdftk <span class="nv">$PDFIN</span> output <span class="nv">$PDFOUT</span> owner_pw <span class="nv">$PW</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>
+生成した pdf ファイルが Evince から印刷できるので、おかしいなーと思ってハマっていたけど、そういうものらしい。
+acroread からはちゃんと、印刷できないし、 Security の Allow Printing の項目も問題ない。
+まー <code>pdfcrack</code> なるツールもあるので、気休め程度の対応。
+</p>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://blog.paz-para.com/?p=1709">http://blog.paz-para.com/?p=1709</a> blog.paz-para.com » Blog Archive » シェルスクリプトでパスワード生成
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/31/reason-keep-to-using-x/">DirectFB 上で gtk+/Qt などの GUI アプリケーションを常用してはいけない理由</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-31T23:30:00+09:00" pubdate data-updated="true">May 31<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+DirectFB はフレームバッファ上に、描画 API を提供するライブラリなのだけれど、 DirectFB の API を利用することによって、 フレームバッファ上に gtk+ アプリケーションを立ち上げることのできる Gtk-DFB <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> というのがある。
+この主な用途としては OS のインストールに際して、 GUI インストーラを使用する際にこれを立ち上げたり、組込みデバイスにおいて GUI アプリケーションを立ち上げるサポートを行ったりするらしい。
+</p>
+
+
+
+
+<p>
+でも、 X 重いしデスクトップ環境でも GTK アプリケーションしか使わないんなら Gtk-DFB を常用しても構わないんじゃないの? とか思うわけなのだけれど、同じ質問が stackoverflow <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> で投稿されていたのでまとめてみた。
+</p>
+
+
+
+
+<p>
+以下、 Stack Overflow からの引用、和訳。
+</p>
+
+
+
+
+<blockquote>
+<p>
+Havoc P の回答 (意訳):
+</p>
+
+<p>
+X は最近の携帯電話よりもはるかに劣る計算機の時代に開発されたものなんだ。
+だから、すでに使われていない様々な機能を未だに持っていたりするし，そのためにピクセルを描画するための機能が最適化されていないから、オーバーヘッドが大きいのは仕方がないことなんだ。
+</p>
+
+<p>
+また、 X はもともとクライアントとサーバ間のモデルを抱えていて、デスクトップ環境だとクライアントとサーバが同じマシンの上で動いているために、いまいちパフォーマンスが悪いんだ。
+このパフォーマンスの低下はクライアントとサーバ間の通信が原因でそれが関係しないエクステンション (pixmaps, DRI, etc&#x2026;) はパフォーマンスの低下とあまり因果はないんだよ。
+ただ、複数のプロセスがハードウェアに同一にアクセスすることがあるから、必ずしも X のソケット処理だけがネックであるとは限らないんだけどね。
+</p>
+
+<p>
+だけど、ハードウェアに複数のプロセスがアクセスすることになるからこそ、プロセスのクラッシュを防ぐといった意味で X の利点というのはあるんだ。
+Google Chrome について見てみると Google Chrome 上で複数のプロセスが走ることでメモリの使用量は大きくなるけれども、各プロセスが高速に動作することが示されている。
+つまり、ただプロセス数が少なければそれらが高速に動作するというものではないんだよ。
+</p>
+
+<p>
+DirectFB の API を利用して GTK アプリケーションを動作することが問題である理由はたくさんある。
+例えば、 Firefox は大体、 X を経由して起動されるけど、 Firefox のブラウザプラグインには Firefox が描画に用いている Gtk+ を利用せず、例えば Adobe-Flash プラグインのような直接 X を用いて描画を行っているものがあるんだ。
+他にも X を使用していないアプリケーションがあったとしてもその実行環境として、 Gnome や Xfce といった、結局は X に依存しているようなデスクトップ環境を想定しているものがあるんだ。
+</p>
+
+<p>
+X を置換えることができない他の理由としてはドライバの存在がある。
+nVidia のプロプライエタリなドライバはオープンソースのドライバより、パフォーマンスが高い状態で動作するけれども、これらは X に関連付けられていて、 X 無しで動作することができないんだ。
+ソースコードも公開されていないから他に移植することもできないしね。
+</p>
+
+<p>
+もちろん、移行の方法もあるけれど、 X と X の元で動作するデスクトップ環境等の上で動作する 100 以上のアプリを使用している場合、わざわざアプリが動作しない環境に移行しようとする人はいないだろう。
+ほとんどの場合、新しいウィンドウシステム上でルートレスな X サーバを動作させることで古いアプリケーションを動作させることもできるんだ。 (Wayland のことカナァ)
+</p>
+
+<p>
+古いものは決して悪ではなくて、 X は洗練されたウィンドウシステムであるんだ。
+それに、より進化することで、今後、数年後も動作を保証するものでもあるんだよ。
+</p>
+
+<p>
+とにかく僕が長々と言ってきたのは、今までのアプリがちゃんと動作する環境を作成したうえで X から離れるには膨大なコストを必要とするんだ。
+そして、それは大体はハードウェアの問題だ。
+</p>
+
+<p>
+X には様々な問題があって、 Wayland プロジェクトが目指しているようなアトミックな画面のアップデートなどがあるけれども、大体はユーザのための非アトミックなアップデートや開発者のために推奨されるような拡張機能のようなごまかしみたいなものなんだ。 ( atomic をどう訳せばいいのかワカラン)
+ただ、 X を落として早さを手に入れればいいってもんじゃないんだ。
+X はネットワークや古さに準拠することで再び安っぽいハードウェアのために設計されたんだ。
+そう、私が X と emacs を 8MB の RAM で走らせているようにね。
+</p>
+</blockquote>
+
+
+
+
+<p>
+ネットワークや GPU 等のハードウェアや X に完全に依存しないインストーラ等のシングルタスクのアプリケーションであれば問題ないという理解でよいのだろうな。
+</p>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://directfb.org/wiki/index.php/Projects:GTK_on_DirectFB">http://directfb.org/wiki/index.php/Projects:GTK_on_DirectFB</a> Projects:GTK on DirectFB - DirectFB
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="http://stackoverflow.com/questions/3327767/why-is-directfb-not-more-widely-used-in-gnu-linux-are-there-crippling-limitatio">http://stackoverflow.com/questions/3327767/why-is-directfb-not-more-widely-used-in-gnu-linux-are-there-crippling-limitatio</a> graphics - Why is DirectFB not more widely used in GNU/Linux? Are there crippling limitations to it that don&#8217;t exist in X11? - Stack Overflow
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/28/write-revealjs-in-org-mode/">reveal.js を Org 記法で!!</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-28T23:00:00+09:00" pubdate data-updated="true">May 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">はじめに</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+reveal.js を知らない方は <a href="http://lab.hakim.se/reveal-js/#/">reveal.js - The HTML Presentation Framework</a> を参照。
+一時期、流行った impress.js<sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 的な HTML5 プレゼンテーションツールみたいなもの。
+</p>
+
+<p>
+impress.js はなんだか凝りすぎて結局のところ、テンプレのようなすごいスライドを作るのには js ガリガリ書けないといけないし、 GUI ツールも使いづらかったので断念していた。
+reveal.js も似たようなもんだろーと思っていたところ、 markdown 記法で reveal.js 用のスライドを書くという記事 <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> を発見したので、齧ってみることにした。
+でも、 markdown で書けるなら org-mode で書きたいよねー (この記事も org-mode で生成してるし。。。) という話で、調べてみた。
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">reveal.js</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+当然、必要なのでダウンロードしておく。
+reveal.js の配置してあるパスは覚えておく。
+</p>
+<pre class="example">
+$ git clone git://github.com/hakimel/reveal.js.git revealjs
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3">org-reveal</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+「 org-mode reveal js 」とかでググってたら、こんなの (<a href="https://github.com/yjwen/org-reveal">`yjwen/org-reveal · GitHub</a>) があった。
+</p>
+
+<p>
+案の定、 melpa にもあったので、 emacs からインストールしてみたけど、 melpa から依存関係上インストールした org-mode が emacs 24.2 では動かないので、 portage と git でインストールする。
+</p>
+<pre class="example">
+# emerge =org-mode-8.0.2 --autounmask-write
+$ cd ~/.emacs.d/path/to/
+$ git clone git clone https://github.com/yjwen/org-reveal.git org-reveal
+## パスは追加しておく
+</pre>
+
+<p>
+<code>~/.emacs.el</code> に以下を書く。
+</p>
+
+<pre class="example">
+(require 'ox-reveal)
+</pre>
+
+<p>
+org-reveal を <code>git clone</code> したときの <code>~/.emacs.d/path/to/readme.org</code> を開いて、以下の行を適当な箇所に追加する。
+</p>
+<pre class="example">
+#+REVEAL_ROOT: /home/kdkk-/dev/repo/revealjs/
+</pre>
+
+<p>
+<code>C-c C-e R R</code> をタイプすると、同じフォルダに readme.org という名前のファイルが出力される。 webkit 対応のブラウザで開くとヌルヌル動く!!
+書き方は <code>readme.org</code> 読みながら勉強中。。
+</p>
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://bartaz.github.io/impress.js/#/boredimpress.js">http://bartaz.github.io/impress.js/#/boredimpress.js</a> | presentation tool based on the power of CSS3 transforms and transitions in modern browsers | by Bartek Szopka @bartaz
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="http://blog.nishimiyahara.net/2013/02/revealjs-markdown.html">http://blog.nishimiyahara.net/2013/02/revealjs-markdown.html</a> あの reveal.js でのプレゼンを Markdown で簡単に書けるようにした - 新大阪でコワーキングスペースを主宰している Perl プログラマのブログ
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/24/cpu-hotplug-at-suspend/">サスペンドできないときは Cpu_hotplug 周りに気をつけよう</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-24T23:43:00+09:00" pubdate data-updated="true">May 24<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+カーネルを <code>3.7.10</code> -&gt; <code>3.8.13</code> にアップデートしたら、サスペンドできなくなっていたので 2 日間ぐらい積んでいた。
+サスペンドができないとラップトップを気軽に持ち運ぶこともできない (電源オフはキツい) 。
+</p>
+
+
+
+
+<p>
+ひたすら ACPI 関連のオプションを触ってひたすら試行錯誤してみたけど、解決できなかった。
+</p>
+
+
+
+
+<div class="example:">
+
+</div>
+
+
+
+
+<p>
+とか打っても大したログは見られない。。
+</p>
+
+
+
+
+<p>
+結局、いろいろググって、 <code>CONFIG_HOTPLUG_CPU</code> が怪しいということがわかり、 <code>make oldconfig</code> したときに、 <code>BOOTPARAM_HOTPLUG_CPU0</code> について聞かれたの思い出したのでこれについて無効化して試してみたら、あっさりサスペンドできた。
+</p>
+
+
+
+
+<p>
+カーネルの更新時にはよく確認しよう。
+</p>
+
+
+
+
+<p>
+個人的には <code>make oldconfig</code> 使いたくなくて、普通に <code>make menuconfig</code> からいじりたいのだけどなぁ。
+</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/22/fix-eijiro-in-stardict/">Stardict 用の英辞郎辞書ファイルを修復する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-22T08:20:00+09:00" pubdate data-updated="true">May 22<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+以前， stardict 向けに変換した英辞郎の辞書ファイル <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> が起動時に stardict で読み込まれないので、原因を調べてみた。
+</p>
+
+
+
+
+<p>
+stardict は <code>~/.stardict/stardict.cfg</code> にデフォルトの扱う辞書やデフォルトの辞書セットについての設定を保存しているようで、起動時にこれを読み込み、設定に変更が加えられるとファイルにも変更が反映されるようになっている。設定ファイルへの変更について調べていると、起動時の設定ファイルの読み込みの段階で問題があるために辞書ファイルが読みが失敗するよう。ちゃんとしたログメッセージを見たかったので、以下のようにオプションを付けて stardict を実行してみた。
+</p>
+
+
+
+
+<div class="html:">
+<p>
+Include file &#8217;<sub>code</sub> lang:bash 20130522/stardict&#8217; contains invalid characters or sequences
+</p>
+
+</div>
+
+
+
+
+<p>
+ログによると、辞書ファイルが壊れているらしい。 <code>stardict_stardict-verify</code> というコマンドがあったので実行してみると、 stardict の辞書ファイルで扱えるキーの長さが 256 文字までらしく、それを越える範囲でキーが設定されているため、辞書ファイルの読み込みに失敗するとのログが出力される。
+</p>
+
+
+
+
+<div class="html:">
+<p>
+Include file &#8217;<sub>code</sub> lang:bash 20130522/stardict<sub>stardict</sub>-verify&#8217; contains invalid characters or sequences
+</p>
+
+</div>
+
+
+
+
+<p>
+<code>stardict_stardict-repair</code> というコマンドも見つけたので、辞書ファイルが修復できるのではないかと思い、実行してみるけれども延々とした標準出力が得られるだけで結局、失敗した。
+</p>
+
+
+
+
+<p>
+なんか、辞書ファイルの生成からやり直した方がよいと思うので、そのうちスクリプトを書くつもり。
+</p>
+
+
+
+
+<p>
+現在は起動してから辞書ファイルを追加すれば、一応使用できるため面倒な作業に耐えられれば、常用できる。あと、普段は sdcv コマンドを使用しているので問題なかったりする。
+</p>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://kdkk-.github.io/kdkk-/blog/2013/05/11/eijiro-on-stardict/%20little%20something%20about%20me./">http://kdkk-.github.io/kdkk-/blog/2013/05/11/eijiro-on-stardict/%20little%20something%20about%20me./</a> Linux の Stardict で英辞郎を使う - 日々、しこうさくごの足あと
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/21/current-directory-name-in-tmux-window-name/">作業ディレクトリの名前を Tmux のウィンドウ名に表示する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-21T19:46:00+09:00" pubdate data-updated="true">May 21<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+毎回， tmux でウィンドウの名前はカレントディレクトリにリネームして使っているのだけれど，自動でリネームしてくれたらいいのにって思って，調べてみたら以下 <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> を <code>~/.zshrc</code> に書けばいいらしい．なるほどなるほど．
+</p>
+
+
+
+
+<div class="html:">
+<p>
+Include file &#8217;<sub>code</sub> lang:bash 20130521/zshrc&#8217; contains invalid characters or sequences
+</p>
+
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://mint.hateblo.jp/entry/2012/12/17/175553">http://mint.hateblo.jp/entry/2012/12/17/175553</a> tmux のウィンドウ名をカレントディレクトリにする - ミントフレーバー緑茶
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/3/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <ul id="recent_posts">
+      <li class="post">
+      <a href="http://kixonn.github.io" alt="Home"><img src="/images/Home.png"></a>
+      <a href="http://kixonn.github.io/archives/" alt="Archives"><img src="/images/Calendar.png"></a>
+      <a href="http://kixonn.github.io/atom.xml" alt="subscribe feed"><img src="/images/rss_big.png"></a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <br /><div align=center>
+    <img src="/images/avator.png" height=150px>
+  </div><br />
+  <p>来年度から、六本木で働く大学院生。この日記みたいなものはその毎日のログみたいなものです。</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/02/mpd-conf-for-pulseaudio/">Mpd で Pulseaudio を出力先に指定する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/18/get-ipv4-addr-in-shell/">シェルスクリプト中で Ip アドレスをゲットする方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/09/ripping-cd-by-cdrdao/">Cdrdao で AccurateRip</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/22/unzip-in-gentoo/">Unzip_in_gentoo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/27/genymotion-on-linux/">Linux から Android OS を起動して Kindle を読む</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>Android (2)</a></li>
+<li class='category'><a href='/blog/categories/c-11/'>C++11 (1)</a></li>
+<li class='category'><a href='/blog/categories/emacs/'>Emacs (4)</a></li>
+<li class='category'><a href='/blog/categories/firefox/'>Firefox (1)</a></li>
+<li class='category'><a href='/blog/categories/gentoo/'>Gentoo (5)</a></li>
+<li class='category'><a href='/blog/categories/gentoolinux/'>GentooLinux (5)</a></li>
+<li class='category'><a href='/blog/categories/haskell/'>Haskell (1)</a></li>
+<li class='category'><a href='/blog/categories/js/'>JS (1)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>Linux (9)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>Octopress (4)</a></li>
+<li class='category'><a href='/blog/categories/org-mode/'>Org-mode (1)</a></li>
+<li class='category'><a href='/blog/categories/tex/'>TeX (1)</a></li>
+<li class='category'><a href='/blog/categories/vimperator/'>Vimperator (1)</a></li>
+<li class='category'><a href='/blog/categories/tmux/'>tmux (1)</a></li>
+<li class='category'><a href='/blog/categories/zsh/'>zsh (1)</a></li>
+
+  </ul>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/kixonn">@kixonn</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'kixonn',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - kixonn -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

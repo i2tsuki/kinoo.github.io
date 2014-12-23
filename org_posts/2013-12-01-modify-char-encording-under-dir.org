@@ -1,0 +1,15 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "ディレクトリ配下のファイルの文字コードを変更する"
+date: 2013-12-01 10:33:16 +0900
+comments: true
+categories: Linux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+ディレクトリ配下の特定ファイルの文字エンコードを変更したい場合があったため、メモ。今回の場合だと cue ファイルのエンコードを変更したかったので、 cue ファイルを指定して探索。
+
+#+BEGIN_SRC
+{% include_code lang:bash 20131201/encode_cue_to_utf8.sh %}
+#+END_SRC

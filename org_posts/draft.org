@@ -1,0 +1,16 @@
+#+BEGIN_HTML
+---
+layout: post
+title: C++11 の std::regex_iterator について
+date: 2013-07-11 15:19
+comments: true
+categories: C++11 GentooLinux Boost
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+
+* 準備
+
+* GCC 4.7.3
+GCC 4.7.3 (2013/07/11 付) は C++11 をフルサポートしていない。
+一応のサポート状況はこちら [fn:2] 。

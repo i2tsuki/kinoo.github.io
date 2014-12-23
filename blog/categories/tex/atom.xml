@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: TeX | 日々、しこうさくごの足あと]]></title>
+  <link href="http://kixonn.github.io/blog/categories/tex/atom.xml" rel="self"/>
+  <link href="http://kixonn.github.io/"/>
+  <updated>2014-12-24T01:21:25+09:00</updated>
+  <id>http://kixonn.github.io/</id>
+  <author>
+    <name><![CDATA[kixonn]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[TeX で生成する PDF のバージョンを下げる]]></title>
+    <link href="http://kixonn.github.io/blog/2013/05/08/notitle/"/>
+    <updated>2013-05-08T09:57:00+09:00</updated>
+    <id>http://kixonn.github.io/blog/2013/05/08/notitle</id>
+    <content type="html"><![CDATA[<p>
+TeX は TeX Live 2012 を使用していて、論文に用いる図を作成していたりするのだけど、 PDF のバージョンが新しすぎて <code>ebb</code> コマンドで bounding box が作成できなかったので、メモ。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">解決策</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+<code>tex</code> ファイルをタイプセットしてできた <code>dvi</code> ファイルに対して <code>dvipdfmx</code> コマンドを実行する際に <code>-V</code> オプションで PDF のバージョンを指定してやればよいらしい。
+</p>
+<div class="example:">
+<p>
+$ platex article.tex
+$ dvipdfmx -V 3 article.dvi
+## PDF v1.3 の article.pdf が生成される
+</p>
+
+</div>
+
+<p>
+ちなみに、今回は <code>xetex</code> で図を作成していたので、 <code>xetex</code> で PDF ファイルのバージョンを指定して出力するには以下のようなオプションを指定してやればよい。
+</p>
+<div class="example:">
+<p>
+$ xelatex &#x2013;output-driver='xdvipdfmx -q -E -V 3' article.tex
+</p>
+
+</div>
+
+<p>
+PDF ファイルそのもののバージョンのダウンって Adobe Acrobat 以外できないんですかねー。 Unix コマンド等でできればいいんですけど。。
+</p>
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+</feed>

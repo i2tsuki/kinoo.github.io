@@ -1,0 +1,28 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "シェルスクリプト中で ip アドレスをゲットする方法"
+date: 2014-09-18 00:34:55 +0900
+comments: true
+categories: Linux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+シェルスクリプトで IP アドレスだけ取得したい場合、どのようにすれば取得できるか調べていると、下記のような方法があった [fn:1] 。
+#+BEGIN_HTML
+   {% include_code lang:bash 20140917/get_ipv4_01.sh %}
+#+END_HTML
+
+下記のような方法も考えたけど、イマイチなので↑のほうがいいのかなぁ。
+
+#+BEGIN_HTML
+   {% include_code lang:bash 20140917/get_ipv4_02.sh %}
+#+END_HTML
+
+ちなみに、 AWS EC2 上だと、 api 経由で以下のように取れるので、 AWS 上では綺麗に書ける。
+
+#+BEGIN_HTML
+   {% include_code lang:bash 20140917/get_ipv4_03.sh %}
+#+END_HTML
+
+[fn:1] http://unix.stackexchange.com/questions/119269/how-to-get-ip-address-using-shell-script bash - How to get IP Address using shell script? - Unix & Linux Stack Exchange

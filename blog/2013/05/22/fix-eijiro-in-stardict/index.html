@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>stardict 用の英辞郎辞書ファイルを修復する - 日々、しこうさくごの足あと</title>
+  <meta name="author" content="kixonn">
+
+  
+  <meta name="description" content="以前， stardict 向けに変換した英辞郎の辞書ファイル 1 が起動時に stardict で読み込まれないので、原因を調べてみた。 stardict は ~/.stardict/stardict.cfg にデフォルトの扱う辞書やデフォルトの辞書セットについての設定を保存しているようで、 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kixonn.github.io/blog/2013/05/22/fix-eijiro-in-stardict">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="日々、しこうさくごの足あと" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-41371716-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+</hgroup>
+
+</header>
+  <!-- <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.co.jp/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kixonn.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Stardict 用の英辞郎辞書ファイルを修復する</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-22T08:20:00+09:00" pubdate data-updated="true">May 22<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>
+以前， stardict 向けに変換した英辞郎の辞書ファイル <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> が起動時に stardict で読み込まれないので、原因を調べてみた。
+</p>
+
+
+
+
+<p>
+stardict は <code>~/.stardict/stardict.cfg</code> にデフォルトの扱う辞書やデフォルトの辞書セットについての設定を保存しているようで、起動時にこれを読み込み、設定に変更が加えられるとファイルにも変更が反映されるようになっている。設定ファイルへの変更について調べていると、起動時の設定ファイルの読み込みの段階で問題があるために辞書ファイルが読みが失敗するよう。ちゃんとしたログメッセージを見たかったので、以下のようにオプションを付けて stardict を実行してみた。
+</p>
+
+
+
+
+<div class="html:">
+<p>
+Include file &#8217;<sub>code</sub> lang:bash 20130522/stardict&#8217; contains invalid characters or sequences
+</p>
+
+</div>
+
+
+
+
+<p>
+ログによると、辞書ファイルが壊れているらしい。 <code>stardict_stardict-verify</code> というコマンドがあったので実行してみると、 stardict の辞書ファイルで扱えるキーの長さが 256 文字までらしく、それを越える範囲でキーが設定されているため、辞書ファイルの読み込みに失敗するとのログが出力される。
+</p>
+
+
+
+
+<div class="html:">
+<p>
+Include file &#8217;<sub>code</sub> lang:bash 20130522/stardict<sub>stardict</sub>-verify&#8217; contains invalid characters or sequences
+</p>
+
+</div>
+
+
+
+
+<p>
+<code>stardict_stardict-repair</code> というコマンドも見つけたので、辞書ファイルが修復できるのではないかと思い、実行してみるけれども延々とした標準出力が得られるだけで結局、失敗した。
+</p>
+
+
+
+
+<p>
+なんか、辞書ファイルの生成からやり直した方がよいと思うので、そのうちスクリプトを書くつもり。
+</p>
+
+
+
+
+<p>
+現在は起動してから辞書ファイルを追加すれば、一応使用できるため面倒な作業に耐えられれば、常用できる。あと、普段は sdcv コマンドを使用しているので問題なかったりする。
+</p>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://kdkk-.github.io/kdkk-/blog/2013/05/11/eijiro-on-stardict/%20little%20something%20about%20me./">http://kdkk-.github.io/kdkk-/blog/2013/05/11/eijiro-on-stardict/%20little%20something%20about%20me./</a> Linux の Stardict で英辞郎を使う - 日々、しこうさくごの足あと
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kixonn</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-22T08:20:00+09:00" pubdate data-updated="true">May 22<span>nd</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kixonn.github.io/blog/2013/05/22/fix-eijiro-in-stardict/" data-via="" data-counturl="http://kixonn.github.io/blog/2013/05/22/fix-eijiro-in-stardict/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/21/current-directory-name-in-tmux-window-name/" title="Previous Post: 作業ディレクトリの名前を tmux のウィンドウ名に表示する">&laquo; 作業ディレクトリの名前を tmux のウィンドウ名に表示する</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/05/24/cpu-hotplug-at-suspend/" title="Next Post: サスペンドできないときは cpu_hotplug 周りに気をつけよう">サスペンドできないときは cpu_hotplug 周りに気をつけよう &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <ul id="recent_posts">
+      <li class="post">
+      <a href="http://kixonn.github.io" alt="Home"><img src="/images/Home.png"></a>
+      <a href="http://kixonn.github.io/archives/" alt="Archives"><img src="/images/Calendar.png"></a>
+      <a href="http://kixonn.github.io/atom.xml" alt="subscribe feed"><img src="/images/rss_big.png"></a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <br /><div align=center>
+    <img src="/images/avator.png" height=150px>
+  </div><br />
+  <p>来年度から、六本木で働く大学院生。この日記みたいなものはその毎日のログみたいなものです。</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/02/mpd-conf-for-pulseaudio/">Mpd で Pulseaudio を出力先に指定する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/18/get-ipv4-addr-in-shell/">シェルスクリプト中で Ip アドレスをゲットする方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/09/ripping-cd-by-cdrdao/">Cdrdao で AccurateRip</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/22/unzip-in-gentoo/">Unzip_in_gentoo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/27/genymotion-on-linux/">Linux から Android OS を起動して Kindle を読む</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>Android (2)</a></li>
+<li class='category'><a href='/blog/categories/c-11/'>C++11 (1)</a></li>
+<li class='category'><a href='/blog/categories/emacs/'>Emacs (4)</a></li>
+<li class='category'><a href='/blog/categories/firefox/'>Firefox (1)</a></li>
+<li class='category'><a href='/blog/categories/gentoo/'>Gentoo (5)</a></li>
+<li class='category'><a href='/blog/categories/gentoolinux/'>GentooLinux (5)</a></li>
+<li class='category'><a href='/blog/categories/haskell/'>Haskell (1)</a></li>
+<li class='category'><a href='/blog/categories/js/'>JS (1)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>Linux (9)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>Octopress (4)</a></li>
+<li class='category'><a href='/blog/categories/org-mode/'>Org-mode (1)</a></li>
+<li class='category'><a href='/blog/categories/tex/'>TeX (1)</a></li>
+<li class='category'><a href='/blog/categories/vimperator/'>Vimperator (1)</a></li>
+<li class='category'><a href='/blog/categories/tmux/'>tmux (1)</a></li>
+<li class='category'><a href='/blog/categories/zsh/'>zsh (1)</a></li>
+
+  </ul>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/kixonn">@kixonn</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'kixonn',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - kixonn -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

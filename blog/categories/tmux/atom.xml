@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: tmux | 日々、しこうさくごの足あと]]></title>
+  <link href="http://kixonn.github.io/blog/categories/tmux/atom.xml" rel="self"/>
+  <link href="http://kixonn.github.io/"/>
+  <updated>2014-12-24T01:21:25+09:00</updated>
+  <id>http://kixonn.github.io/</id>
+  <author>
+    <name><![CDATA[kixonn]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[作業ディレクトリの名前を tmux のウィンドウ名に表示する]]></title>
+    <link href="http://kixonn.github.io/blog/2013/05/21/current-directory-name-in-tmux-window-name/"/>
+    <updated>2013-05-21T19:46:00+09:00</updated>
+    <id>http://kixonn.github.io/blog/2013/05/21/current-directory-name-in-tmux-window-name</id>
+    <content type="html"><![CDATA[<p>
+毎回， tmux でウィンドウの名前はカレントディレクトリにリネームして使っているのだけれど，自動でリネームしてくれたらいいのにって思って，調べてみたら以下 <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> を <code>~/.zshrc</code> に書けばいいらしい．なるほどなるほど．
+</p>
+
+
+
+
+<div class="html:">
+<p>
+Include file '<sub>code</sub> lang:bash 20130521/zshrc' contains invalid characters or sequences
+</p>
+
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://mint.hateblo.jp/entry/2012/12/17/175553">http://mint.hateblo.jp/entry/2012/12/17/175553</a> tmux のウィンドウ名をカレントディレクトリにする - ミントフレーバー緑茶
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,55 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "Linux の Stardict で英辞郎を使う"
+date: 2013-05-09 21:03
+comments: true
+categories: GentooLinux Linux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+デスクトップ環境でポップアップ辞書が使える環境を調べていたら、 stardict がヒットして、実際に使ってみるとポップアップ辞書については非常に使いやすかった。なので、どうせならばと思って、英辞郎を stardict で利用したくなったのでやってみた記事。
+幸いにも、先駆者が何人かいる [fn:1] [fn:2] [fn:3] ようなので、そちらをまとめてみた。
+
+* 方法
+** 環境
+   - 英辞郎 Ver.123
+   - Perl v5.12.4
+
+** 準備
+   英辞郎のデータを購入する。無ければ買う。
+   今回、利用したのは Ver.123 。ダウンロードすると、 =EDP-123.exe= のファイル名になっている。ファイルは =exe= だけれど、実体は自己展開型の =rar= ファイルなので、 Unix 系 OS だったら、 =unrar= コマンドがインストールされていれば、以下のコマンドで辞書ファイルを展開できる。
+
+   {% include_code lang:bash 20130511/unrar_command.sh %}
+
+   ただし、ゴミファイルもたくさん出力されるので注意が必要。今回、扱うファイルは英和辞書ファイルの =EIJI-123.TXT= のみなので、その他は削除してしまっても構わない。
+
+   以下の Perl スクリプト [fn:1] を =reorder.pl= として、 =EIJI-123.TXT= と同じディレクトリに保存する。
+
+   {% include_code lang:perl 20130511/reorder.pl %}
+
+   同様に以下 [fn:2] も =eiji2sd.pl= として、 =EIJI-123.TXT= と同じディレクトリに保存する。
+
+   {% include_code lang:perl 20130511/eiji2sd.pl %}
+
+   stardict の辞書ファイルを作成するために、 stardict-tools パッケージをインストールする必要がある。 Portage を使用しているのであれば、 stardict を =emerge= する際に =USE= フラグの =tools= をオンにしておく。
+** 変換
+   現状、最も新しい記事 [fn:3] を参考に以下の手順で作業を行ってみた。
+
+   {% include_code lang:bash 20130511/eiji_convert.sh %}
+
+   =EIJI-123.TXT= の文字コードは =Shift_JIS= だけど、 =reorder.pl= が処理の段階で =UTF-8= に変換してくれるので、 =nkf= などで事前の変換は必要ない。むしろ、してはいけない。
+
+   =stardict-editor= コマンドを実行すると、 GUI が立ち上がるので、 [File name] に先ほど作成した =.tab= ファイルを指定して [Compile] をクリックする。
+
+   =EIJI-123.tab= と同じディレクトリに =EIJI-123.dict.dz=, =EIJI-123.idx=, =EIJI-123.ifo= の三つのファイルが生成されるので、これらを =~/.stardict/dic/= ディレクトリ以下に移動する。それ以外のファイルは削除してしまっても問題ない。
+** Stardict の設定
+   stardict を起動して、 [manage dict] の項目から辞書ファイルを追加できる。通知領域のアイコンを右クリックして [Scan] にチェックを入れて、適当なテキストを選択すればポップアップ辞書が表示できる。
+   stardict の辞書ファイルの設定は =~/.stardict/stardict.cfg= ファイルに XML 形式で記載されている。
+
+* Android で利用する
+  [[https://play.google.com/store/apps/details?id=com.socialnmobile.colordict&hl=ja][ColorDict 辞典 - カラーノートの辞典 - Google Play の Android アプリ]] を利用すれば stardict 形式の辞書ファイルを扱うことができるため、これをインストールしておく。 =dict= ファイルの圧縮形式である =dict.dz= ファイルについては扱うことができないので、以下のように =dictzip= コマンドを実行して、 =dict= 形式のファイルを展開しておく。 SD カードあるいは本体の領域の適当なところ置いて ColorDict から参照できるよう設定する。
+
+[fn:1] http://d.hatena.ne.jp/aaa555/mobile?sid=5e78fece023e7557&date=20120630 aaa555 no Zakki (Daily Memo)
+[fn:2] http://fisheater-uk.blogspot.jp/2011/03/stardict-android.html fisheater: 英辞郎 を StarDict と Android で使う
+[fn:3] http://neurotechnololgy.blogspot.jp/2013/02/androidpdf.html techmemo: Android 端末＋ PDF リーダー + 英辞郎

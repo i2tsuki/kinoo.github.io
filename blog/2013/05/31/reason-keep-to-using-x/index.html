@@ -1,0 +1,399 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>DirectFB 上で gtk+/Qt などの GUI アプリケーションを常用してはいけない理由 - 日々、しこうさくごの足あと</title>
+  <meta name="author" content="kixonn">
+
+  
+  <meta name="description" content="DirectFB はフレームバッファ上に、描画 API を提供するライブラリなのだけれど、 DirectFB の API を利用することによって、 フレームバッファ上に gtk+ アプリケーションを立ち上げることのできる Gtk-DFB 1 というのがある。
+この主な用途としては OS &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kixonn.github.io/blog/2013/05/31/reason-keep-to-using-x">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="日々、しこうさくごの足あと" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-41371716-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+</hgroup>
+
+</header>
+  <!-- <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.co.jp/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kixonn.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">DirectFB 上で gtk+/Qt などの GUI アプリケーションを常用してはいけない理由</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-31T23:30:00+09:00" pubdate data-updated="true">May 31<span>st</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>
+DirectFB はフレームバッファ上に、描画 API を提供するライブラリなのだけれど、 DirectFB の API を利用することによって、 フレームバッファ上に gtk+ アプリケーションを立ち上げることのできる Gtk-DFB <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> というのがある。
+この主な用途としては OS のインストールに際して、 GUI インストーラを使用する際にこれを立ち上げたり、組込みデバイスにおいて GUI アプリケーションを立ち上げるサポートを行ったりするらしい。
+</p>
+
+
+
+
+<p>
+でも、 X 重いしデスクトップ環境でも GTK アプリケーションしか使わないんなら Gtk-DFB を常用しても構わないんじゃないの? とか思うわけなのだけれど、同じ質問が stackoverflow <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> で投稿されていたのでまとめてみた。
+</p>
+
+
+
+
+<p>
+以下、 Stack Overflow からの引用、和訳。
+</p>
+
+
+
+
+<blockquote>
+<p>
+Havoc P の回答 (意訳):
+</p>
+
+<p>
+X は最近の携帯電話よりもはるかに劣る計算機の時代に開発されたものなんだ。
+だから、すでに使われていない様々な機能を未だに持っていたりするし，そのためにピクセルを描画するための機能が最適化されていないから、オーバーヘッドが大きいのは仕方がないことなんだ。
+</p>
+
+<p>
+また、 X はもともとクライアントとサーバ間のモデルを抱えていて、デスクトップ環境だとクライアントとサーバが同じマシンの上で動いているために、いまいちパフォーマンスが悪いんだ。
+このパフォーマンスの低下はクライアントとサーバ間の通信が原因でそれが関係しないエクステンション (pixmaps, DRI, etc&#x2026;) はパフォーマンスの低下とあまり因果はないんだよ。
+ただ、複数のプロセスがハードウェアに同一にアクセスすることがあるから、必ずしも X のソケット処理だけがネックであるとは限らないんだけどね。
+</p>
+
+<p>
+だけど、ハードウェアに複数のプロセスがアクセスすることになるからこそ、プロセスのクラッシュを防ぐといった意味で X の利点というのはあるんだ。
+Google Chrome について見てみると Google Chrome 上で複数のプロセスが走ることでメモリの使用量は大きくなるけれども、各プロセスが高速に動作することが示されている。
+つまり、ただプロセス数が少なければそれらが高速に動作するというものではないんだよ。
+</p>
+
+<p>
+DirectFB の API を利用して GTK アプリケーションを動作することが問題である理由はたくさんある。
+例えば、 Firefox は大体、 X を経由して起動されるけど、 Firefox のブラウザプラグインには Firefox が描画に用いている Gtk+ を利用せず、例えば Adobe-Flash プラグインのような直接 X を用いて描画を行っているものがあるんだ。
+他にも X を使用していないアプリケーションがあったとしてもその実行環境として、 Gnome や Xfce といった、結局は X に依存しているようなデスクトップ環境を想定しているものがあるんだ。
+</p>
+
+<p>
+X を置換えることができない他の理由としてはドライバの存在がある。
+nVidia のプロプライエタリなドライバはオープンソースのドライバより、パフォーマンスが高い状態で動作するけれども、これらは X に関連付けられていて、 X 無しで動作することができないんだ。
+ソースコードも公開されていないから他に移植することもできないしね。
+</p>
+
+<p>
+もちろん、移行の方法もあるけれど、 X と X の元で動作するデスクトップ環境等の上で動作する 100 以上のアプリを使用している場合、わざわざアプリが動作しない環境に移行しようとする人はいないだろう。
+ほとんどの場合、新しいウィンドウシステム上でルートレスな X サーバを動作させることで古いアプリケーションを動作させることもできるんだ。 (Wayland のことカナァ)
+</p>
+
+<p>
+古いものは決して悪ではなくて、 X は洗練されたウィンドウシステムであるんだ。
+それに、より進化することで、今後、数年後も動作を保証するものでもあるんだよ。
+</p>
+
+<p>
+とにかく僕が長々と言ってきたのは、今までのアプリがちゃんと動作する環境を作成したうえで X から離れるには膨大なコストを必要とするんだ。
+そして、それは大体はハードウェアの問題だ。
+</p>
+
+<p>
+X には様々な問題があって、 Wayland プロジェクトが目指しているようなアトミックな画面のアップデートなどがあるけれども、大体はユーザのための非アトミックなアップデートや開発者のために推奨されるような拡張機能のようなごまかしみたいなものなんだ。 ( atomic をどう訳せばいいのかワカラン)
+ただ、 X を落として早さを手に入れればいいってもんじゃないんだ。
+X はネットワークや古さに準拠することで再び安っぽいハードウェアのために設計されたんだ。
+そう、私が X と emacs を 8MB の RAM で走らせているようにね。
+</p>
+</blockquote>
+
+
+
+
+<p>
+ネットワークや GPU 等のハードウェアや X に完全に依存しないインストーラ等のシングルタスクのアプリケーションであれば問題ないという理解でよいのだろうな。
+</p>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://directfb.org/wiki/index.php/Projects:GTK_on_DirectFB">http://directfb.org/wiki/index.php/Projects:GTK_on_DirectFB</a> Projects:GTK on DirectFB - DirectFB
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="http://stackoverflow.com/questions/3327767/why-is-directfb-not-more-widely-used-in-gnu-linux-are-there-crippling-limitatio">http://stackoverflow.com/questions/3327767/why-is-directfb-not-more-widely-used-in-gnu-linux-are-there-crippling-limitatio</a> graphics - Why is DirectFB not more widely used in GNU/Linux? Are there crippling limitations to it that don&#8217;t exist in X11? - Stack Overflow
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kixonn</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-31T23:30:00+09:00" pubdate data-updated="true">May 31<span>st</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux/'>Linux</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kixonn.github.io/blog/2013/05/31/reason-keep-to-using-x/" data-via="" data-counturl="http://kixonn.github.io/blog/2013/05/31/reason-keep-to-using-x/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/28/write-revealjs-in-org-mode/" title="Previous Post: reveal.js を org 記法で!!">&laquo; reveal.js を org 記法で!!</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/04/denied-printing-pdf-file/" title="Next Post: pdf ファイルの印刷を不可設定にする">pdf ファイルの印刷を不可設定にする &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <ul id="recent_posts">
+      <li class="post">
+      <a href="http://kixonn.github.io" alt="Home"><img src="/images/Home.png"></a>
+      <a href="http://kixonn.github.io/archives/" alt="Archives"><img src="/images/Calendar.png"></a>
+      <a href="http://kixonn.github.io/atom.xml" alt="subscribe feed"><img src="/images/rss_big.png"></a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <br /><div align=center>
+    <img src="/images/avator.png" height=150px>
+  </div><br />
+  <p>来年度から、六本木で働く大学院生。この日記みたいなものはその毎日のログみたいなものです。</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/02/mpd-conf-for-pulseaudio/">Mpd で Pulseaudio を出力先に指定する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/18/get-ipv4-addr-in-shell/">シェルスクリプト中で Ip アドレスをゲットする方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/09/ripping-cd-by-cdrdao/">Cdrdao で AccurateRip</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/22/unzip-in-gentoo/">Unzip_in_gentoo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/27/genymotion-on-linux/">Linux から Android OS を起動して Kindle を読む</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>Android (2)</a></li>
+<li class='category'><a href='/blog/categories/c-11/'>C++11 (1)</a></li>
+<li class='category'><a href='/blog/categories/emacs/'>Emacs (4)</a></li>
+<li class='category'><a href='/blog/categories/firefox/'>Firefox (1)</a></li>
+<li class='category'><a href='/blog/categories/gentoo/'>Gentoo (5)</a></li>
+<li class='category'><a href='/blog/categories/gentoolinux/'>GentooLinux (5)</a></li>
+<li class='category'><a href='/blog/categories/haskell/'>Haskell (1)</a></li>
+<li class='category'><a href='/blog/categories/js/'>JS (1)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>Linux (9)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>Octopress (4)</a></li>
+<li class='category'><a href='/blog/categories/org-mode/'>Org-mode (1)</a></li>
+<li class='category'><a href='/blog/categories/tex/'>TeX (1)</a></li>
+<li class='category'><a href='/blog/categories/vimperator/'>Vimperator (1)</a></li>
+<li class='category'><a href='/blog/categories/tmux/'>tmux (1)</a></li>
+<li class='category'><a href='/blog/categories/zsh/'>zsh (1)</a></li>
+
+  </ul>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/kixonn">@kixonn</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'kixonn',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - kixonn -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

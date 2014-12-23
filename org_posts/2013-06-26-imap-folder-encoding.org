@@ -1,0 +1,30 @@
+#+BEGIN_HTML
+---
+layout: post
+title: IMAP フォルダ名をデコードする
+date: 2013-06-26 20:26
+comments: true
+categories: Emacs Linux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+先日、設定した mu4e について、 Gmail アカウントを扱おうとすると、 IMAP フォルダが文字化けする事案が発生していたので、これを修正。
+結論からいえば Gmail の設定から [言語] を [English (US)] とかに変更すれば、 再度、 =offlineimap= 実行したときに =&U9dP4TDIMOwwpA0 (受信トレイ)= といったローカルの IMAP フォルダでの表示が =INBOX= といった Ascii 文字に変更されるので、きれいに解決したいのであればそのような対応で問題ない。
+けれども、 Gmail の表示言語を日本語のまま、使うには上記では問題がある (クライアントセットアップしてるのにそんなことある必要性があるかどうかは別として) ．
+
+* UTF-7 文字のデコード
+国際的なメールボックス名は [[http://www.lins.jp/~obata/imap/rfc/rfc2060ja.html#s5.1.3][RFC 2060]] 標準化規格によって、 UTF-7 でエンコードされているので、実際のフォルダ名を知るにはこれをデコードしなければならない。
+Ruby を用いてデコードするには以下でよいらしい [fn:1] 。
+
+#+BEGIN_HTML
+{% include_code lang:bash 20130626/bash %}
+#+END_HTML
+
+
+それで、以下のような感じで、 =emacs.el= に設定すればよいのだけれど。
+#+BEGIN_HTML
+{% include_code lang:scheme 20130626/emacs %}
+#+END_HTML
+これだと、フォルダ移動のときのフォルダ名入力のときに面倒なので、エイリアス作成するか本を正せば Gmail の言語を変更した方がよい。
+
+[fn:1] http://star.ap.teacup.com/1yen/1063.html IMAP の日本語フォルダ | どんなことでも

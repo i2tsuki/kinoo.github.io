@@ -1,0 +1,35 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "Octopress のサイドバーにカテゴリのリストを追加する"
+date: 2013-05-09 21:03
+comments: true
+categories: Octopress
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+カテゴリ、結構つくる人なのでサイドバーにカテゴリ欲しい。。調べていたら、下記がヒットしたので、以下日本語訳的なもの。
+
+[[http://www.dotnetguy.co.uk/post/2012/06/25/octopress-category-list-plugin/][Octopress - Category List Plug-in - Ruby on Rails with Dan Watson]][fn:1]
+
+* 使い方
+
+下記のコードをコピーして、 =./plugins/category_list_tab.rb= として保存する。
+
+#+BEGIN_HTML
+{% include_code lang:ruby 20130509/category_list_tab.rb %}
+#+END_HTML
+
+[fn:1] http://www.dotnetguy.co.uk/post/2012/06/25/octopress-category-list-plugin/ Octopress - Category List Plug-in - Ruby on Rails with Dan Watson
+
+下記のコードをコピーして、 =./source/_includes/custom/asides/category_list.html= として保存する。
+
+#+BEGIN_HTML
+{% include_code lang:html 20130509/category_list.html %}
+#+END_HTML
+
+あとは、 =_config.yml=  に以下のように変更を加えるだけ。
+
+#+BEGIN_HTML
+{% include_code lang:yaml 20130509/_config.yml %}
+#+END_HTML

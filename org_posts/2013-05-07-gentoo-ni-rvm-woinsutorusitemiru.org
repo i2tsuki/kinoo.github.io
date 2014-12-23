@@ -1,0 +1,50 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "Gentoo Linux に RVM をインストールしてみる"
+date: 2013-05-07 22:00
+comments: true
+categories: Octopress GentooLinux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+
+Octopress を導入する際に、システムの rake ではうまく動かなかったので、ユーザスペースに Ruby をインストールして試してみた。結論から言うと、 RVM でインストールした Ruby では Octopress の動作を確認できた。
+
+* 環境
+- Gentoo Linux 64bit
+- システム Ruby のバージョン: ruby-1.9.3p392
+
+* インストール
+RVM 公式 の [[https://rvm.io/rvm/install/][RVM: Ruby Version Manager - Installing RVM]][fn:1] を参考に、今回は stable 版をインストールしたいので以下のコマンドを実行する。 proxy を挟む場合も同様。
+
+#+BEGIN_EXAMPLE:
+$ curl -L https://get.rvm.io | bash -s stable
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   184  100   184    0     0    201      0 --:--:-- --:--:-- --:--:--   201
+100 13641  100 13641    0     0   5399      0  0:00:02  0:00:02 --:--:-- 68547
+Downloading RVM from wayneeseguin branch stable
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   124  100   124    0     0    152      0 --:--:-- --:--:-- --:--:--   152
+100 3263k  100 3263k    0     0   244k      0  0:00:13  0:00:13 --:--:--  300k
+
+……
+
+$ echo "source $HOME/.rvm/scripts/rvm" >> ~/.zshrc
+#+END_EXAMPLE:
+
+* 使い方
+今回は rails とか使わず、 Ruby の環境を構築するだけなので、必要最小限のコマンドをメモしておく。
+
+#+BEGIN_EXAMPLE:
+$ rvm list known
+## 利用できる Ruby のバージョンの表示
+$ rvm install ruby-2.0.0-rc1
+## 特定のバージョンの Ruby をインストール
+$ rvm use ruby-2.0.0-rc1
+## ローカルの Ruby を切り替え
+## rake 等の gem によってインストールされたパッケージの実行ファイルのパスもこちらが優先されるので便利!!
+#+END_EXAMPLE:
+
+[fn:1] https://rvm.io/rvm/install/ RVM: Ruby Version Manager - Installing RVM

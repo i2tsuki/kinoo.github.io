@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Gentoo | 日々、しこうさくごの足あと]]></title>
+  <link href="http://kixonn.github.io/blog/categories/gentoo/atom.xml" rel="self"/>
+  <link href="http://kixonn.github.io/"/>
+  <updated>2014-12-24T01:21:25+09:00</updated>
+  <id>http://kixonn.github.io/</id>
+  <author>
+    <name><![CDATA[kixonn]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[cdrdao で AccurateRip]]></title>
+    <link href="http://kixonn.github.io/blog/2014/09/09/ripping-cd-by-cdrdao/"/>
+    <updated>2014-09-09T12:07:25+09:00</updated>
+    <id>http://kixonn.github.io/blog/2014/09/09/ripping-cd-by-cdrdao</id>
+    <content type="html"><![CDATA[<p>
+cd をリッピングする際は今まで、 EAC (Exact Audio Copy) <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> を使って windows 上で、 cd をリッピングしてた。
+cddb に gracenote 使ってタグ付けしたかったからなのだけど、 api 叩けば linux からでも十分に使用できたのでわざわざ windows を立ち上げて EAC を使う必要性も感じなくなった。
+</p>
+
+
+
+
+<p>
+それで、 AccurateRip に対応したリッピングソフトを調べていたのだけど、最初は AccurateRip 準拠な cdparanoia を使用したいと考えたものの、設定項目が多く学習コストが高いため、 cdparanoia をラップするアプリケーションを利用してみることにした。調べてみると、二つの候補として以下のものがあった。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">abcde</h2>
+</div>
+
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">cdrdao</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+abcde を初めに使ってみたが、いざリッピングすると mkcue がないと怒られた。調べてみると mkcue 自体は完全に他から取ってこないといけないようで面倒。また、 abcde 自体も思った通りの動作をしてくれず、使いづらいように感じた。
+</p>
+
+<p>
+cdrdao については、 man も読みやすく内部で何を行っているのか明快であったため、使いやすく感じた。
+例えば、 cdrdao を使ってリッピングを行う場合は以下のように行うだけだった <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> 。
+</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (cdrdao_rip.sh)</span> <a href='/downloads/code/20140909/cdrdao_rip.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cdrdao <span class="nb">read</span>-cd --device /dev/sr0 --read-raw --paranoia-mode 3 --datafile file.bin file.toc
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>
+あと、 flac + cue な形式に変換するには以下のようにするだけ。
+</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (conv_flac.sh)</span> <a href='/downloads/code/20140909/conv_flac.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>flac -6 -V --force-raw --sample-rate<span class="o">=</span>44100 --channels<span class="o">=</span>2 --bps<span class="o">=</span>16 --endian<span class="o">=</span>big --sign<span class="o">=</span>signed file.bin -o file.flac
+</span><span class='line'>toc2cue file.toc file.cue
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>
+便利でしょ!!
+</p>
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://www.exactaudiocopy.de/">http://www.exactaudiocopy.de/</a> Exact Audio Copy
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="http://www.hydrogenaud.io/forums/index.php?showtopic=88238">http://www.hydrogenaud.io/forums/index.php?showtopic=88238</a> Perfect Single-File FLAC: cdrdao vs. abcde - Hydrogenaudio Forums
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[unzip_in_gentoo]]></title>
+    <link href="http://kixonn.github.io/blog/2014/06/22/unzip-in-gentoo/"/>
+    <updated>2014-06-22T10:47:08+09:00</updated>
+    <id>http://kixonn.github.io/blog/2014/06/22/unzip-in-gentoo</id>
+    <content type="html"><![CDATA[<p>
+Gentoo で zip ファイル展開時に文字化け (zip ファイルの中のファイル名が、 shift-jis でエンコードされている) することがある。以下のようにすればよいらしい <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+
+
+
+<pre class="example">
+% sudo USE="nastspec" emerge -uDt unzip
+</pre>
+
+
+
+
+<p>
+下手に mvconv とかしなくてもよかったみたいです。←したひと
+</p>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://insnvlovn.blogspot.jp/2011/06/unzip.html">http://insnvlovn.blogspot.jp/2011/06/unzip.html</a> 日記 (gentoo,php): unzip の文字化け
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux から Android OS を起動して Kindle を読む]]></title>
+    <link href="http://kixonn.github.io/blog/2014/04/27/genymotion-on-linux/"/>
+    <updated>2014-04-27T00:00:00+09:00</updated>
+    <id>http://kixonn.github.io/blog/2014/04/27/genymotion-on-linux</id>
+    <content type="html"><![CDATA[<p>
+Linux で Android を動かしたいというか Kindle を動かして本を読みたかったので、 Genymotion のインストールを試みてみた。 すでに Virtual Box はインストールしているので、そのままイメージをインストールして動かしてもよかったのだけど、パフォーマンスを発揮させたいので、 AndroVM の後継である Genymotion を動かしたログ。 Windows 上で動かした報告はたくさんあるけど、 Linux はなかなかなかったので残してみた。
+</p>
+
+
+
+
+<p>
+amd64 環境なので、 Debian 向けの実行ファイルをダウンロードする。このあとの準備として、必要なライブラリとして <code>libaudio.so</code> を含んでいる <code>media-libs/nas</code> と <code>dev-util/android-sdk-update-manager</code> を <code>emerge</code> しておく。あと、もちろん、だけど <code>adb</code> のインストールもしておく。
+</p>
+
+
+
+
+<pre class="example">
+{ % img [] downloads/image/20140427/2014-04-27-scrot1.png [640] %}
+</pre>
+
+
+
+
+<p>
+ダウンロードしたファイルを実行すると同じ階層に genymotion フォルダが作成されて、色々なファイルがダウンロードされるので、その中の genymotion を実行する。あとは、 Windows 版とかと同じ。今回は、 Nexus 7 のイメージを選んでみた。なお、 Android のバージョンは 4.3 を選択しないと Kindle が動かないので、 4.3 を選択したほうがよい。 Play ボタンを押すとデフォルトの設定のまま動いた。あとは、 Play アプリをインストールするためにリンク先 <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> に従う。
+</p>
+
+
+
+
+<p>
+Google Play 経由で Kindle をインストールすると解像度にもよるけどいい感じに表示されたので、これからはこれで Kindle 本を読んでもいいかもしれない (キャンペーンやってて、 Kindle 買ったけど) 。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">参照</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+[GUIDE] Genymotion | Installing ARM Translation and GApps[Updated Nov.16] - xda-developers - <a href="http://forum.xda-developers.com/showthread.php?t=2528952">http://forum.xda-developers.com/showthread.php?t=2528952</a>
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Portage で configure 時に任意のオプションを付加する]]></title>
+    <link href="http://kixonn.github.io/blog/2013/10/22/extra-conf-in-portage/"/>
+    <updated>2013-10-22T10:24:35+09:00</updated>
+    <id>http://kixonn.github.io/blog/2013/10/22/extra-conf-in-portage</id>
+    <content type="html"><![CDATA[<p>
+portage をパッケージ管理ツールに使用していると、「あれ、このコンパイル時にオプション有効になってないの？」と思ったりすることがある。 ebuild を確認して、 USE フラグと照らし合わせてオプションが定義されていなかったりする場合がごくまれにある。そういったときは、オレオレ ebuild を作成するのがいいんだけど、一時的に試してみるなら以下のように指定することもできる <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+
+
+
+<pre class="example">
+EXTRA_ECONF="--enable-foo ......" emerge package
+</pre>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://rony.wikidot.com/gentoo:portage-extra-econf">http://rony.wikidot.com/gentoo:portage-extra-econf</a> Gentoo Portage: emerge with EXTRA<sub>ECONF</sub> - Rony
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[xmonad でボーダを消す]]></title>
+    <link href="http://kixonn.github.io/blog/2013/08/16/xmonad-contrib-smartborder/"/>
+    <updated>2013-08-16T08:18:00+09:00</updated>
+    <id>http://kixonn.github.io/blog/2013/08/16/xmonad-contrib-smartborder</id>
+    <content type="html"><![CDATA[<p>
+普段はウィンドウマネージャとして xmonad を使っているけど、ウィンドウをワークスペースに対してフルスクリーン表示したときにフォーカスを示すためのボーダが表示されるのに困っていた。
+例えば、 ウィンドウの大きさが BoderWidth x 2 px 分削られるので VMware とか使うときに困る。
+</p>
+
+
+
+
+<p>
+解決としては xmonad-contrib にある XMonad.Layout.NoBorders を import して smartBorders を使って以下のように layoutHook に書けばよい <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>&ldquo;xmonad.hs&rdquo;  (xmonad.hs)</span> <a href='/downloads/code/20130816/xmonad.hs'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>    <span class="n">xmonad</span> <span class="o">$</span> <span class="n">defaultConfig</span>
+</span><span class='line'>        <span class="n">layoutHook</span> <span class="ow">=</span> <span class="n">smartBorders</span> <span class="o">$</span> <span class="n">mkToggle1</span> <span class="kt">FULL</span> <span class="o">$</span> <span class="n">desktopLayoutModifiers</span> <span class="p">(</span><span class="n">named</span> <span class="s">&quot;V&quot;</span> <span class="n">tall</span> <span class="o">|||</span> <span class="p">(</span><span class="n">named</span> <span class="s">&quot;H&quot;</span> <span class="o">$</span> <span class="kt">Mirror</span> <span class="n">tall</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>
+smartBorders を使うと，ワークスペースにウィンドウが一つしかないときには、ボーダを表示してくれなくなる。
+これで、合理的なインターフェイスになるし、スッキリした。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">参照</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+haskell - How to delete borders in "Full" layout from xmonad default config? - Stack Overflow <a href="http://stackoverflow.com/questions/10642644/how-to-delete-borders-in-full-layout-from-xmonad-default-config">http://stackoverflow.com/questions/10642644/how-to-delete-borders-in-full-layout-from-xmonad-default-config</a>
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+</feed>

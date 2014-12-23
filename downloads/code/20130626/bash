@@ -1,0 +1,4 @@
+$ ruby -r net/imap -e 'puts Net::IMAP.decode_utf7 ("&U9dP4TDIMOwwpA-")'
+受信トレイ
+$ ruby -r net/imap -e 'puts Net::IMAP.encode_utf7 ("受信トレイ")'
+&U9dP4TDIMOwwpA-

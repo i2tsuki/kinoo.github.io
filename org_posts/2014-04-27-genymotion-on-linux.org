@@ -1,0 +1,26 @@
+#+BEGIN_HTML
+---
+layout: post
+title: Linux から Android OS を起動して Kindle を読む
+date: 2014-04-27 00:00
+comments: true
+categories: Android Gentoo
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+
+Linux で Android を動かしたいというか Kindle を動かして本を読みたかったので、 Genymotion のインストールを試みてみた。 すでに Virtual Box はインストールしているので、そのままイメージをインストールして動かしてもよかったのだけど、パフォーマンスを発揮させたいので、 AndroVM の後継である Genymotion を動かしたログ。 Windows 上で動かした報告はたくさんあるけど、 Linux はなかなかなかったので残してみた。
+
+amd64 環境なので、 Debian 向けの実行ファイルをダウンロードする。このあとの準備として、必要なライブラリとして =libaudio.so= を含んでいる =media-libs/nas= と =dev-util/android-sdk-update-manager= を =emerge= しておく。あと、もちろん、だけど =adb= のインストールもしておく。
+
+#+BEGIN_SRC
+{ % img [] downloads/image/20140427/2014-04-27-scrot1.png [640] %}
+#+END_SRC
+
+ダウンロードしたファイルを実行すると同じ階層に genymotion フォルダが作成されて、色々なファイルがダウンロードされるので、その中の genymotion を実行する。あとは、 Windows 版とかと同じ。今回は、 Nexus 7 のイメージを選んでみた。なお、 Android のバージョンは 4.3 を選択しないと Kindle が動かないので、 4.3 を選択したほうがよい。 Play ボタンを押すとデフォルトの設定のまま動いた。あとは、 Play アプリをインストールするためにリンク先 [fn:2] に従う。
+
+Google Play 経由で Kindle をインストールすると解像度にもよるけどいい感じに表示されたので、これからはこれで Kindle 本を読んでもいいかもしれない (キャンペーンやってて、 Kindle 買ったけど) 。
+
+* 参照
+[fn:1] Genymotion - PC で Android を起動して Kindle も読める♪ インストールから「 Google Play 」導入方法までまとめ | mogi2fruits どっとねっと - http://mogi2fruits.net/blog/os-software/windows/1557/#Android
+[fn:2] [GUIDE] Genymotion | Installing ARM Translation and GApps[Updated Nov.16] - xda-developers - http://forum.xda-developers.com/showthread.php?t=2528952

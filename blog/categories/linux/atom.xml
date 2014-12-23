@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Linux | 日々、しこうさくごの足あと]]></title>
+  <link href="http://kixonn.github.io/blog/categories/linux/atom.xml" rel="self"/>
+  <link href="http://kixonn.github.io/"/>
+  <updated>2014-12-24T01:21:25+09:00</updated>
+  <id>http://kixonn.github.io/</id>
+  <author>
+    <name><![CDATA[kixonn]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[mpd で pulseaudio を出力先に指定する]]></title>
+    <link href="http://kixonn.github.io/blog/2014/11/02/mpd-conf-for-pulseaudio/"/>
+    <updated>2014-11-02T00:00:00+09:00</updated>
+    <id>http://kixonn.github.io/blog/2014/11/02/mpd-conf-for-pulseaudio</id>
+    <content type="html"><![CDATA[<p>
+ALSA をオーディオの出力先に使用しているアプリケーションが mpd の他にあり、そちらを pulseaudio 対応するのが面倒だったので、多少音質が悪くなってもいいという妥協点で、 mpd のオーディオ出力先を pulseaudio にしようとしたら、少し嵌ったのでメモ。
+</p>
+
+
+
+
+<p>
+単純に <code>mpd.conf</code> の出力先に pulseaudio を以下のように追記して、 =mpc enable "My Pulse Output" とやるだけではダメで。
+どうやら、 pulseaudio に出力できないと mpd から怒られる。
+</p>
+
+
+
+
+<p>
+悪いのは pulseaudio の設定で、 <code>/etc/pulse/default.pa</code> を書き換える必要がある。
+</p>
+
+
+
+
+<pre class="example">
+-#load-module module-native-protocol-tcp
++load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
+</pre>
+
+
+
+
+<p>
+書き換えた後に pulseaudio を再起動。
+</p>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pulseaudio &amp;mdash;kill
+</span><span class='line'><span class="nv">$ </span>pulseaudio &amp;mdash;start &amp;mdash;log-target<span class="o">=</span>syslog
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">参照</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+<a href="https://wiki.archlinux.org/index.php/MPD/Tips_and_Tricks#PulseAudio">https://wiki.archlinux.org/index.php/MPD/Tips_and_Tricks#PulseAudio</a> "Music Player Daemon/Tips and tricks - ArchWiki"
+</p>
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[シェルスクリプト中で ip アドレスをゲットする方法]]></title>
+    <link href="http://kixonn.github.io/blog/2014/09/18/get-ipv4-addr-in-shell/"/>
+    <updated>2014-09-18T00:34:55+09:00</updated>
+    <id>http://kixonn.github.io/blog/2014/09/18/get-ipv4-addr-in-shell</id>
+    <content type="html"><![CDATA[<p>
+シェルスクリプトで IP アドレスだけ取得したい場合、どのようにすれば取得できるか調べていると、下記のような方法があった <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (get_ipv4_01.sh)</span> <a href='/downloads/code/20140917/get_ipv4_01.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip addr | grep <span class="s1">&#39;state UP&#39;</span> -A2 | tail -n1 | awk <span class="s1">&#39;{print $2}&#39;</span> | cut -f1 -d<span class="s1">&#39;/&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>
+下記のような方法も考えたけど、イマイチなので↑のほうがいいのかなぁ。
+</p>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (get_ipv4_02.sh)</span> <a href='/downloads/code/20140917/get_ipv4_02.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ip -f inet addr show | grep <span class="s1">&#39;state UP&#39;</span> -A1 | grep -o -e <span class="s1">&#39;[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/[0-9]\+&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>
+ちなみに、 AWS EC2 上だと、 api 経由で以下のように取れるので、 AWS 上では綺麗に書ける。
+</p>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (get_ipv4_03.sh)</span> <a href='/downloads/code/20140917/get_ipv4_03.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>curl http://169.254.169.254/latest/meta-data/local-ipv4
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://unix.stackexchange.com/questions/119269/how-to-get-ip-address-using-shell-script">http://unix.stackexchange.com/questions/119269/how-to-get-ip-address-using-shell-script</a> bash - How to get IP Address using shell script? - Unix &amp; Linux Stack Exchange
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[cdrdao で AccurateRip]]></title>
+    <link href="http://kixonn.github.io/blog/2014/09/09/ripping-cd-by-cdrdao/"/>
+    <updated>2014-09-09T12:07:25+09:00</updated>
+    <id>http://kixonn.github.io/blog/2014/09/09/ripping-cd-by-cdrdao</id>
+    <content type="html"><![CDATA[<p>
+cd をリッピングする際は今まで、 EAC (Exact Audio Copy) <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> を使って windows 上で、 cd をリッピングしてた。
+cddb に gracenote 使ってタグ付けしたかったからなのだけど、 api 叩けば linux からでも十分に使用できたのでわざわざ windows を立ち上げて EAC を使う必要性も感じなくなった。
+</p>
+
+
+
+
+<p>
+それで、 AccurateRip に対応したリッピングソフトを調べていたのだけど、最初は AccurateRip 準拠な cdparanoia を使用したいと考えたものの、設定項目が多く学習コストが高いため、 cdparanoia をラップするアプリケーションを利用してみることにした。調べてみると、二つの候補として以下のものがあった。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">abcde</h2>
+</div>
+
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">cdrdao</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+abcde を初めに使ってみたが、いざリッピングすると mkcue がないと怒られた。調べてみると mkcue 自体は完全に他から取ってこないといけないようで面倒。また、 abcde 自体も思った通りの動作をしてくれず、使いづらいように感じた。
+</p>
+
+<p>
+cdrdao については、 man も読みやすく内部で何を行っているのか明快であったため、使いやすく感じた。
+例えば、 cdrdao を使ってリッピングを行う場合は以下のように行うだけだった <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> 。
+</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (cdrdao_rip.sh)</span> <a href='/downloads/code/20140909/cdrdao_rip.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cdrdao <span class="nb">read</span>-cd --device /dev/sr0 --read-raw --paranoia-mode 3 --datafile file.bin file.toc
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>
+あと、 flac + cue な形式に変換するには以下のようにするだけ。
+</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (conv_flac.sh)</span> <a href='/downloads/code/20140909/conv_flac.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>flac -6 -V --force-raw --sample-rate<span class="o">=</span>44100 --channels<span class="o">=</span>2 --bps<span class="o">=</span>16 --endian<span class="o">=</span>big --sign<span class="o">=</span>signed file.bin -o file.flac
+</span><span class='line'>toc2cue file.toc file.cue
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>
+便利でしょ!!
+</p>
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://www.exactaudiocopy.de/">http://www.exactaudiocopy.de/</a> Exact Audio Copy
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="http://www.hydrogenaud.io/forums/index.php?showtopic=88238">http://www.hydrogenaud.io/forums/index.php?showtopic=88238</a> Perfect Single-File FLAC: cdrdao vs. abcde - Hydrogenaudio Forums
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ディレクトリ配下のファイルの文字コードを変更する]]></title>
+    <link href="http://kixonn.github.io/blog/2013/12/01/modify-char-encording-under-dir/"/>
+    <updated>2013-12-01T10:33:16+09:00</updated>
+    <id>http://kixonn.github.io/blog/2013/12/01/modify-char-encording-under-dir</id>
+    <content type="html"><![CDATA[<p>
+ディレクトリ配下の特定ファイルの文字エンコードを変更したい場合があったため、メモ。今回の場合だと cue ファイルのエンコードを変更したかったので、 cue ファイルを指定して探索。
+</p>
+
+
+
+
+<pre class="example">
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (encode_cue_to_utf8.sh)</span> <a href='/downloads/code/20131201/encode_cue_to_utf8.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'><span class="k">for </span>file in <span class="sb">`</span>find . -type f -name <span class="s1">&#39;*.cue&#39;</span><span class="sb">`</span>;
+</span><span class='line'><span class="k">do</span>
+</span><span class='line'><span class="k">    </span>nkf -w --in-place file
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">exit</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</pre>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[IMAP フォルダ名をデコードする]]></title>
+    <link href="http://kixonn.github.io/blog/2013/06/26/imap-folder-encoding/"/>
+    <updated>2013-06-26T20:26:00+09:00</updated>
+    <id>http://kixonn.github.io/blog/2013/06/26/imap-folder-encoding</id>
+    <content type="html"><![CDATA[<p>
+先日、設定した mu4e について、 Gmail アカウントを扱おうとすると、 IMAP フォルダが文字化けする事案が発生していたので、これを修正。
+結論からいえば Gmail の設定から [言語] を [English (US)] とかに変更すれば、 再度、 <code>offlineimap</code> 実行したときに <code>&amp;U9dP4TDIMOwwpA0 (受信トレイ)</code> といったローカルの IMAP フォルダでの表示が <code>INBOX</code> といった Ascii 文字に変更されるので、きれいに解決したいのであればそのような対応で問題ない。
+けれども、 Gmail の表示言語を日本語のまま、使うには上記では問題がある (クライアントセットアップしてるのにそんなことある必要性があるかどうかは別として) ．
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">UTF-7 文字のデコード</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+国際的なメールボックス名は <a href="http://www.lins.jp/~obata/imap/rfc/rfc2060ja.html#s5.1.3">RFC 2060</a> 標準化規格によって、 UTF-7 でエンコードされているので、実際のフォルダ名を知るにはこれをデコードしなければならない。
+Ruby を用いてデコードするには以下でよいらしい <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (bash)</span> <a href='/downloads/code/20130626/bash'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ruby -r net/imap -e <span class="s1">&#39;puts Net::IMAP.decode_utf7 (&quot;&amp;U9dP4TDIMOwwpA-&quot;)&#39;</span>
+</span><span class='line'>受信トレイ
+</span><span class='line'><span class="nv">$ </span>ruby -r net/imap -e <span class="s1">&#39;puts Net::IMAP.encode_utf7 (&quot;受信トレイ&quot;)&#39;</span>
+</span><span class='line'>&amp;U9dP4TDIMOwwpA-
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>
+それで、以下のような感じで、 <code>emacs.el</code> に設定すればよいのだけれど。
+</p>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (emacs)</span> <a href='/downloads/code/20130626/emacs'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">setq</span> <span class="nv">mu4e-inbox-folder</span> <span class="s">&quot;/Gmail/&amp;U9dP4TDIMOwwpA-&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>
+これだと、フォルダ移動のときのフォルダ名入力のときに面倒なので、エイリアス作成するか本を正せば Gmail の言語を変更した方がよい。
+</p>
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://star.ap.teacup.com/1yen/1063.html">http://star.ap.teacup.com/1yen/1063.html</a> IMAP の日本語フォルダ | どんなことでも
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+</feed>

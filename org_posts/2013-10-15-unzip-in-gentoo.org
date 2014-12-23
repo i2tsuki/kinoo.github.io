@@ -1,0 +1,19 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "unzip_in_gentoo"
+date: 2014-06-22 10:47:08 +0900
+comments: true
+categories: Gentoo
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+Gentoo で zip ファイル展開時に文字化け (zip ファイルの中のファイル名が、 shift-jis でエンコードされている) することがある。以下のようにすればよいらしい [fn:1] 。
+
+#+BEGIN_SRC
+% sudo USE="nastspec" emerge -uDt unzip
+#+END_SRC
+
+下手に mvconv とかしなくてもよかったみたいです。←したひと
+
+[fn:1] http://insnvlovn.blogspot.jp/2011/06/unzip.html 日記 (gentoo,php): unzip の文字化け

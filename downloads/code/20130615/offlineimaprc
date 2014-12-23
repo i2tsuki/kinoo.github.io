@@ -1,0 +1,39 @@
+[general]
+accounts = Main
+maxsyncaccounts = 3
+
+[Account Main]
+localrepository = LocalMain
+remoterepository = RemoteMain
+
+[Repository LocalMain]
+type = Maildir
+localfolders = ~/Maildir/Main
+
+[Repository RemoteMain]
+type = IMAP
+remotehost = main.co.jp
+remoteuser = kdkk-
+remotepass = ********
+ssl = yes
+cert_fingerprint = ****************************************
+maxconnections = 1
+realdelete = no
+
+[Account Gmail]
+localrepository = LocalGmail
+remoterepository = RemoteGmail
+
+[Repository LocalGmail]
+type = Maildir
+localfolders = ~/Maildir/Gmail
+
+[Repository RemoteGmail]
+type = IMAP
+remotehost = imap.gmail.com
+remoteuser = ********@gmail.com
+remotepass = ********
+ssl = yes
+cert_fingerprint = ****************************************
+maxconnections = 1
+realdelete = no

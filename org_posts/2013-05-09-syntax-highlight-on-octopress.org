@@ -1,0 +1,34 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "Octopress でコードを表示する"
+date: 2013-05-09 21:13
+comments: true
+categories: Octopress
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+[[http://kdkk-.github.io/kdkk-/blog/2013/05/09/sidebar-category-list-on-octopress/][Octopress のサイドバーにカテゴリのリストを追加する]] の記事を書く際に Ruby のコードを記載したかったので、調べてやってみた。
+
+* 方法
+やり方 Octopress [[http://octopress.org/docs/plugins/include-code/][Include Code - Octopress]][fn:1] の公式に記載されていた。
+
+** 記法
+#+BEGIN_EXAMPLE
+{{ "{% include_code [title] [lang:language] path/to/file " }}%}
+#+END_EXAMPLE
+
+** 書き方
+たとえば、表示させたいコードがある場合， =./source/downloads/code/= ディレクトリ以下に配置すればよいらしい。 =category_list_tab.rb= だと =./source/downloads/code/20130509/category_list_tab.rb= として配置している場合、以下のように記述することで、表示できる。
+
+#+BEGIN_EXAMPLE
+{{ "{% include_code lang:ruby 20130509/category_list_tab.rb " }}%}
+#+END_EXAMPLE
+
+#+BEGIN_HTML
+{% include_code lang:ruby 20130509/category_list_tab.rb %}
+#+END_HTML
+
+=[title]= は別になくてもよいみたい。個人的にはタイトルはないほうが好き。あと、日付でディレクトリ分ける方が好きなのでそのようにして分けている。
+
+[fn:1] http://octopress.org/docs/plugins/include-code/ Include Code - Octopress

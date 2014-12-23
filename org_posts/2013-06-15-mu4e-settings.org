@@ -1,0 +1,56 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "複数アカウントを mu4e で扱うときの設定"
+date: 2013-06-15 01:35
+comments: true
+categories: Emacs GentooLinux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+メーラといえば、今日まで emacs の mew を使っていたのだけれど、メールの作成時にファイルを添付して送信しようとするとミニバッファに =nil= とだけ表示されてファイルを添付したメールを作成することができなかった。
+いつもはファイルを添付したメールを作成するときには、わざわざ sylpheed を使っていたのだけれど受信箱にあるメールに対して返信メールを書こうとすると、プロセスが反応しなくなってしまうという問題が最近になって、発生するようになってしまった。
+そこで、この際メールクライアントを刷新しようと思ったのだけれど、候補としては GUI のものは用いたくなかった (GUI は基本的に重いし、 mew を使っているとキーボードで操作できないことに使い心地の悪さを感じる) ので、ハッカーに代表されるツールとして定評のある mutt を選んでみた。
+
+fetchmail + procmail + mutt な環境を三日ぐらいかけて構築したはよいものの、 mew のように受信したメールを見ながら返信を書くことができなかったり、エディタに emacs を設定しても編集しづらかったり、カスタマイズするべき項目が多すぎたりしたために、さらに別のクライアントを探してみた。
+それで、 @myuhe さんが mu4e について言及されていたのをふと思いだしたので、導入してみた。
+結果、結構よい感じに使用できているので導入手順と設定をメモ。
+
+* パッケージインストール
+あらかじめ use フラグに =emacs= =ssl= を追加しておく。
+マニュアル [fn:1] を見て依存するパッケージを確認して、インストールする。
+
+#+BEGIN_SRC
+# emerge gmime xapian mu offlineimap
+#+END_SRC
+
+* offlineimap の設定
+基本的に mu4e は mu をバインドしてメールを閲覧するものであるため、メールは別で取得してくる必要がある。
+それを行ってくれるのが offlineimap コマンドで、取得先のメールサーバの設定、メールの保存先を指定する設定ファイルが =.offlineimaprc= 。
+以下に複数アカウントを扱うサンプルファイルを記しておく。
+
+#+BEGIN_HTML
+{% include_code lang:bash 20130615/offlineimaprc %}
+#+END_HTML
+
+* offlineimpap の実行
+offlineimap の設定が完了したら以下のコマンドを実行して、メールを imap メールサーバから取得し、インデックスを作成しておく。
+#+BEGIN_SRC
+$ imapoffline # [general] の accounts で設定されているアカウントからのメールを取得
+$ imapoffline -a gMail
+$ mu index    # インデックスの作成
+#+END_SRC
+
+* mu4e の設定
+以下を =.emacs.el= に書く。複数アカウントを扱う方法はマニュアルを参照 [fn:2] 。
+#+BEGIN_HTML
+{% include_code lang:scheme 20130615/mu4e_config.el %}
+#+END_HTML
+
+* mu4e を使う
+=M-x= を押して、 =mu4e= を打って =RET= 。
+あとは指示通りに使えばよい。 smtp を ssl から送信する方法がよく分からなくて詰んでた。マニュアルにも見当たらなかったので手探り状態。
+587 ポートは管理者じゃないので変更できない状態でした。
+
+[fn:1] http://www.djcbsoftware.nl/code/mu/mu4e/Installation.html#Installation "Installation - mu4e user manual"
+[fn:2] http://www.djcbsoftware.nl/code/mu/mu4e/Multiple-accounts.html#Multiple-accounts "Multiple accounts - mu4e user manual"

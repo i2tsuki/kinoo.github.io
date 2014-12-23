@@ -1,0 +1,11 @@
+#+BEGIN_HTML
+---
+layout: post
+title: OpenRC を epoch に置き換える
+date: 2014-12-22 08:00:00 +0900
+comments: true
+categories: Gentoo Linux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+init といえば、 gentoo 方面では systemd がやらかす度に話題ですが os 固有の init

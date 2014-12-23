@@ -1,0 +1,26 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "サスペンドできないときは cpu_hotplug 周りに気をつけよう"
+date: 2013-05-24 23:43
+comments: true
+categories:
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+カーネルを =3.7.10= -> =3.8.13= にアップデートしたら、サスペンドできなくなっていたので 2 日間ぐらい積んでいた。
+サスペンドができないとラップトップを気軽に持ち運ぶこともできない (電源オフはキツい) 。
+
+ひたすら ACPI 関連のオプションを触ってひたすら試行錯誤してみたけど、解決できなかった。
+
+#+BEGIN_EXAMPLE:
+# hibernate-ram -v 3
+#+END_EXAMPLE:
+
+とか打っても大したログは見られない。。
+
+結局、いろいろググって、 =CONFIG_HOTPLUG_CPU= が怪しいということがわかり、 =make oldconfig= したときに、 =BOOTPARAM_HOTPLUG_CPU0= について聞かれたの思い出したのでこれについて無効化して試してみたら、あっさりサスペンドできた。
+
+カーネルの更新時にはよく確認しよう。
+
+個人的には =make oldconfig= 使いたくなくて、普通に =make menuconfig= からいじりたいのだけどなぁ。

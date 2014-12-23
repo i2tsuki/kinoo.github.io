@@ -1,0 +1,29 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "pdf ファイルの印刷を不可設定にする"
+date: 2013-06-04 11:00
+comments: true
+categories: Linux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:
+pdf ファイルの印刷を許可しないように設定しなければならない案件があったので、メモ。
+結論だけ、言うと =pdftk= で以下のコマンドを叩いてやるとできる。
+#+BEGIN_EXAMPLE
+pdftk input.pdf output output.pdf owner_pw hogehoge
+#+END_EXAMPLE
+
+どうせやるなら、ランダムな文字列をパスワードに設定したいので以下のシェルスクリプトにまとめてみた。
+
+なお、ランダムな文字列を生成するシェルスクリプトは [fn:1] から拝借した。
+
+#+BEGIN_HTML
+{% include_code lang:bash 20130604/pdftkpw.sh %}
+#+END_HTML
+
+生成した pdf ファイルが Evince から印刷できるので、おかしいなーと思ってハマっていたけど、そういうものらしい。
+acroread からはちゃんと、印刷できないし、 Security の Allow Printing の項目も問題ない。
+まー =pdfcrack= なるツールもあるので、気休め程度の対応。
+
+[fn:1] http://blog.paz-para.com/?p=1709 blog.paz-para.com » Blog Archive » シェルスクリプトでパスワード生成

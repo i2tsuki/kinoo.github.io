@@ -1,0 +1,31 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "stardict 用の英辞郎辞書ファイルを修復する"
+date: 2013-05-22 08:20
+comments: true
+categories:
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+以前， stardict 向けに変換した英辞郎の辞書ファイル [fn:1] が起動時に stardict で読み込まれないので、原因を調べてみた。
+
+stardict は =~/.stardict/stardict.cfg= にデフォルトの扱う辞書やデフォルトの辞書セットについての設定を保存しているようで、起動時にこれを読み込み、設定に変更が加えられるとファイルにも変更が反映されるようになっている。設定ファイルへの変更について調べていると、起動時の設定ファイルの読み込みの段階で問題があるために辞書ファイルが読みが失敗するよう。ちゃんとしたログメッセージを見たかったので、以下のようにオプションを付けて stardict を実行してみた。
+
+#+BEGIN_HTML:
+{% include_code lang:bash 20130522/stardict %}
+#+END_HTML:
+
+ログによると、辞書ファイルが壊れているらしい。 =stardict_stardict-verify= というコマンドがあったので実行してみると、 stardict の辞書ファイルで扱えるキーの長さが 256 文字までらしく、それを越える範囲でキーが設定されているため、辞書ファイルの読み込みに失敗するとのログが出力される。
+
+#+BEGIN_HTML:
+{% include_code lang:bash 20130522/stardict_stardict-verify %}
+#+END_HTML:
+
+=stardict_stardict-repair= というコマンドも見つけたので、辞書ファイルが修復できるのではないかと思い、実行してみるけれども延々とした標準出力が得られるだけで結局、失敗した。
+
+なんか、辞書ファイルの生成からやり直した方がよいと思うので、そのうちスクリプトを書くつもり。
+
+現在は起動してから辞書ファイルを追加すれば、一応使用できるため面倒な作業に耐えられれば、常用できる。あと、普段は sdcv コマンドを使用しているので問題なかったりする。
+
+[fn:1] http://kdkk-.github.io/kdkk-/blog/2013/05/11/eijiro-on-stardict/%20little%20something%20about%20me./ Linux の Stardict で英辞郎を使う - 日々、しこうさくごの足あと

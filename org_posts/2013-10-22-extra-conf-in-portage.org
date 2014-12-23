@@ -1,0 +1,17 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "Portage で configure 時に任意のオプションを付加する"
+date: 2013-10-22 10:24:35 +0900
+comments: true
+categories: Gentoo
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+portage をパッケージ管理ツールに使用していると、「あれ、このコンパイル時にオプション有効になってないの？」と思ったりすることがある。 ebuild を確認して、 USE フラグと照らし合わせてオプションが定義されていなかったりする場合がごくまれにある。そういったときは、オレオレ ebuild を作成するのがいいんだけど、一時的に試してみるなら以下のように指定することもできる [fn:1] 。
+
+#+BEGIN_SRC
+EXTRA_ECONF="--enable-foo ......" emerge package
+#+END_SRC
+
+[fn:1] http://rony.wikidot.com/gentoo:portage-extra-econf Gentoo Portage: emerge with EXTRA_ECONF - Rony

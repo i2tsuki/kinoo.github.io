@@ -1,0 +1,43 @@
+#+BEGIN_HTML
+---
+layout: post
+title: C++11 の std::regex_iterator について
+date: 2013-07-11 15:19
+comments: true
+categories: C++11 GentooLinux
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+最近、 C++11 まわりを色々と調べていて、標準の正規表現ライブラリ =std::regex= に関するメモ。
+
+* 準備
+clang 3.3 にて C++11 がフルサポートされているので、 accept_keyword に追加して emerge する。
+clang はオプションを付与しないと gcc の標準ライブラリを見に行くので、 libcxx も emerge しておく。
+
+#+BEGIN_SRC
+# emerge =clang-3.3 libcxx --autounmask-write
+# etc-update
+# emerge =clang-3.3 libcxx
+#+END_SRC
+
+* 文字列の分割
+C++03 までは、 boost を使用せずに文字列の分割を行うのであれば、例えばスペースで文字列を区切る場合、以下のように自分で一から書くというのがセオリーの一つだった [fn:1] 。
+
+#+BEGIN_HTML
+{% include_code lang:cpp 20130711/split_string01.cc %}
+#+END_HTML
+
+C++11 からは標準正規表現ライブラリ =std::regex= を通して、以下のように書くことができる [fn:2] 。
+
+#+BEGIN_HTML
+{% include_code lang:cpp 20130711/split_string02.cc %}
+#+END_HTML
+
+綺麗で見易いですよね。ちなみに、以下のように書くとハマるので注意が必要。
+
+#+BEGIN_HTML
+{% include_code lang:cpp 20130711/split_string02_dumb.cc %}
+#+END_HTML
+
+[fn:1] http://shnya.jp/blog/?p=195 C++ で文字列の split | Story of Your Life
+[fn:2] http://www.cplusplus.com/reference/regex/regex_token_iterator/regex_token_iterator/ regex_token_iterator::regex_token_iterat... - C++ Reference

@@ -1,0 +1,48 @@
+#+BEGIN_HTML
+---
+layout: post
+title: Locomotive CMS を Apache 上で動かす
+date: 2013-08-08 06:25
+comments: true
+categories:
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+ruby で作成された CMS を使ってサイトを構築したいと考えていたところ、 Locomotive CMS [fn:1] というのを見つけたので触ってみる。
+バックエンドの DB として MongoDB を使っていのも面白そうだった。
+
+* 導入
+CentOS での導入手順としては、日本語で解説されている記事 [fn:2] があったり、公式ページの Guide に載っていたりするので、そちらを参考にコマンドをまとめてみる。なお，事前に rvm や passenger や MongoDB のインストールは任意の方法で行っておく。
+
+#+BEGIN_SRC
+$ mkdir -p ~/rails
+$ cd rails
+$ gem install rails --version=3.2.14
+$ rails new locomotive --skip-active-record --skip-test-unit --skip-javascript --skip-bundle
+$ echo "gem 'rails', '3.2.14'
+gem 'locomotive_cms', '~> 2.0.1', require: 'locomotive/engine'
+gem 'therubyracer', '>= 0.8.2' # Linux only
+
+gem 'unicorn', group: :development
+gem 'thin', group: :production
+
+group :assets do
+  gem 'compass-rails',  '~> 1.0.2'
+  gem 'sass-rails',     '~> 3.2.4'
+  gem 'coffee-rails',   '~> 3.2.2'
+  gem 'uglifier',       '~> 1.2.4'
+end" > Gemfile
+$ bundle install
+$ bundle exec rails generate locomotive:install
+#+END_SRC
+
+Passenger 周りの設定について以下のように書く。
+
+#+BEGIN_HTML
+{% include_code "/etc/httpd/modules/mod_passenger.conf" lang:sh 20130808/passenger.conf %}
+#+END_HTML
+
+なお、今回は Document Root に設置していないので (?) 、 Save 機能がうまく機能しなかった。 Document Root に設定しないとうまく動かないっぽいので、運用の際には注意が必要。癖がありすぎる、レスポンスが遅い ( MongoDB が原因?) ので、運用していく予定はない。けど、グラフィカルで気持ちがよいので、今後が気になるところ。
+
+[fn:1] http://www.locomotivecms.com/ LocomotiveCMS is an open source CMS for Rails
+[fn:2] http://xxxcaqui.hatenablog.cofffffffffffm/entry/2013/04/12/210928 Rails 上で動く CMS LocomotiveCMS を使ってみる。 - xxxcaqui.log

@@ -1,0 +1,24 @@
+#+BEGIN_HTML
+---
+layout: post
+title: xmonad でボーダを消す
+date: 2013-08-16 08:18
+comments: true
+categories: Haskell Gentoo
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+普段はウィンドウマネージャとして xmonad を使っているけど、ウィンドウをワークスペースに対してフルスクリーン表示したときにフォーカスを示すためのボーダが表示されるのに困っていた。
+例えば、 ウィンドウの大きさが BoderWidth x 2 px 分削られるので VMware とか使うときに困る。
+
+解決としては xmonad-contrib にある XMonad.Layout.NoBorders を import して smartBorders を使って以下のように layoutHook に書けばよい [fn:1] 。
+
+#+BEGIN_HTML
+{% include_code "xmonad.hs" lang:haskell 20130816/xmonad.hs %}
+#+END_HTML
+
+smartBorders を使うと，ワークスペースにウィンドウが一つしかないときには、ボーダを表示してくれなくなる。
+これで、合理的なインターフェイスになるし、スッキリした。
+
+* 参照
+[fn:1] haskell - How to delete borders in "Full" layout from xmonad default config? - Stack Overflow http://stackoverflow.com/questions/10642644/how-to-delete-borders-in-full-layout-from-xmonad-default-config

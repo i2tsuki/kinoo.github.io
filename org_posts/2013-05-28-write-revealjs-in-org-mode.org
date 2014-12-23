@@ -1,0 +1,52 @@
+#+BEGIN_HTML
+---
+layout: post
+title: "reveal.js を org 記法で!!"
+date: 2013-05-28 23:00
+comments: true
+categories: Emacs JS
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+* はじめに
+reveal.js を知らない方は [[http://lab.hakim.se/reveal-js/#/][reveal.js - The HTML Presentation Framework]] を参照。
+一時期、流行った impress.js[fn:1] 的な HTML5 プレゼンテーションツールみたいなもの。
+
+impress.js はなんだか凝りすぎて結局のところ、テンプレのようなすごいスライドを作るのには js ガリガリ書けないといけないし、 GUI ツールも使いづらかったので断念していた。
+reveal.js も似たようなもんだろーと思っていたところ、 markdown 記法で reveal.js 用のスライドを書くという記事 [fn:2] を発見したので、齧ってみることにした。
+でも、 markdown で書けるなら org-mode で書きたいよねー (この記事も org-mode で生成してるし。。。) という話で、調べてみた。
+
+* reveal.js
+当然、必要なのでダウンロードしておく。
+reveal.js の配置してあるパスは覚えておく。
+#+BEGIN_EXAMPLE
+$ git clone git://github.com/hakimel/reveal.js.git revealjs
+#+END_EXAMPLE
+
+* org-reveal
+「 org-mode reveal js 」とかでググってたら、こんなの ([[https://github.com/yjwen/org-reveal][`yjwen/org-reveal · GitHub]]) があった。
+
+案の定、 melpa にもあったので、 emacs からインストールしてみたけど、 melpa から依存関係上インストールした org-mode が emacs 24.2 では動かないので、 portage と git でインストールする。
+#+BEGIN_EXAMPLE
+# emerge =org-mode-8.0.2 --autounmask-write
+$ cd ~/.emacs.d/path/to/
+$ git clone git clone https://github.com/yjwen/org-reveal.git org-reveal
+## パスは追加しておく
+#+END_EXAMPLE
+
+=~/.emacs.el= に以下を書く。
+
+#+BEGIN_EXAMPLE
+(require 'ox-reveal)
+#+END_EXAMPLE
+
+org-reveal を =git clone= したときの =~/.emacs.d/path/to/readme.org= を開いて、以下の行を適当な箇所に追加する。
+#+BEGIN_EXAMPLE
+#+REVEAL_ROOT: /home/kdkk-/dev/repo/revealjs/
+#+END_EXAMPLE
+
+=C-c C-e R R= をタイプすると、同じフォルダに readme.org という名前のファイルが出力される。 webkit 対応のブラウザで開くとヌルヌル動く!!
+書き方は =readme.org= 読みながら勉強中。。
+
+[fn:1] http://bartaz.github.io/impress.js/#/boredimpress.js | presentation tool based on the power of CSS3 transforms and transitions in modern browsers | by Bartek Szopka @bartaz
+[fn:2] http://blog.nishimiyahara.net/2013/02/revealjs-markdown.html あの reveal.js でのプレゼンを Markdown で簡単に書けるようにした - 新大阪でコワーキングスペースを主宰している Perl プログラマのブログ

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: C++11 | 日々、しこうさくごの足あと]]></title>
+  <link href="http://kixonn.github.io/blog/categories/c-plus-plus-11/atom.xml" rel="self"/>
+  <link href="http://kixonn.github.io/"/>
+  <updated>2014-12-24T01:21:25+09:00</updated>
+  <id>http://kixonn.github.io/</id>
+  <author>
+    <name><![CDATA[kixonn]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[C++11 の std::regex_iterator について]]></title>
+    <link href="http://kixonn.github.io/blog/2013/07/11/split-by-regex-iterator-cpp/"/>
+    <updated>2013-07-11T15:19:00+09:00</updated>
+    <id>http://kixonn.github.io/blog/2013/07/11/split-by-regex-iterator-cpp</id>
+    <content type="html"><![CDATA[<p>
+最近、 C++11 まわりを色々と調べていて、標準の正規表現ライブラリ <code>std::regex</code> に関するメモ。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">準備</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+clang 3.3 にて C++11 がフルサポートされているので、 accept<sub>keyword</sub> に追加して emerge する。
+clang はオプションを付与しないと gcc の標準ライブラリを見に行くので、 libcxx も emerge しておく。
+</p>
+
+<pre class="example">
+# emerge =clang-3.3 libcxx --autounmask-write
+# etc-update
+# emerge =clang-3.3 libcxx
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">文字列の分割</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+C++03 までは、 boost を使用せずに文字列の分割を行うのであれば、例えばスペースで文字列を区切る場合、以下のように自分で一から書くというのがセオリーの一つだった <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (split_string01.cc)</span> <a href='/downloads/code/20130711/split_string01.cc'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;vector&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">split</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">str</span><span class="p">,</span> <span class="kt">char</span> <span class="n">delim</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">string</span> <span class="n">text</span> <span class="o">=</span> <span class="s">&quot;Thu Jan  1 00:00:00 UTC 1970&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">vec</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="sc">&#39; &#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">vec</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">it</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">split</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">str</span><span class="p">,</span> <span class="kt">char</span> <span class="n">delim</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">res</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">size_t</span> <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">found</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">while</span><span class="p">((</span><span class="n">found</span> <span class="o">=</span> <span class="n">str</span><span class="p">.</span><span class="n">find_first_of</span><span class="p">(</span><span class="n">delim</span><span class="p">,</span> <span class="n">current</span><span class="p">))</span> <span class="o">!=</span> <span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">found</span> <span class="o">-</span> <span class="n">current</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">res</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">found</span> <span class="o">-</span> <span class="n">current</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">current</span> <span class="o">=</span> <span class="n">found</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">res</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">str</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="n">current</span><span class="p">));</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>
+C++11 からは標準正規表現ライブラリ <code>std::regex</code> を通して、以下のように書くことができる <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> 。
+</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (split_string02.cc)</span> <a href='/downloads/code/20130711/split_string02.cc'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;string&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;regex&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">string</span> <span class="n">text</span> <span class="o">=</span> <span class="s">&quot;Thu Jan  1 00:00:00 UTC 1970&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">regex</span> <span class="n">ws_re</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">s+&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">sregex_token_iterator</span> <span class="n">it_begin</span> <span class="o">=</span> <span class="n">sregex_token_iterator</span><span class="p">(</span><span class="n">text</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">text</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">ws_re</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">sregex_token_iterator</span> <span class="n">it_end</span> <span class="o">=</span> <span class="n">sregex_token_iterator</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="n">sregex_token_iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">it_begin</span><span class="p">;</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">it_end</span><span class="p">;</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">it</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>
+綺麗で見易いですよね。ちなみに、以下のように書くとハマるので注意が必要。
+</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (split_string02_dumb.cc)</span> <a href='/downloads/code/20130711/split_string02_dumb.cc'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>  <span class="n">sregex_token_iterator</span> <span class="n">it_begin</span> <span class="o">=</span> <span class="n">sregex_token_iterator</span> <span class="p">(</span><span class="n">text</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">text</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="n">regex</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\\</span><span class="s">s+&quot;</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://shnya.jp/blog/?p=195">http://shnya.jp/blog/?p=195</a> C++ で文字列の split | Story of Your Life
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="http://www.cplusplus.com/reference/regex/regex_token_iterator/regex_token_iterator/">http://www.cplusplus.com/reference/regex/regex_token_iterator/regex_token_iterator/</a> regex<sub>token</sub><sub>iterator</sub>::regex<sub>token</sub><sub>iterat</sub>&#x2026; - C++ Reference
+</p></div>
+
+
+</div>
+</div>
+
+]]></content>
+  </entry>
+  
+</feed>

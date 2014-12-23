@@ -1,0 +1,25 @@
+#+BEGIN_HTML
+---
+layout: post
+title: readme
+date: 1970-01-01 0:00:00 +0000
+comments: true
+categories:
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+* Theme
+  使用しているテーマは oct2-orange 。以下の方法でインストール。
+
+  #+BEGIN_SRC
+  % git submodule add git://github.com/roberto/oct2-orange.git .themes/oct2-orange
+  % rake install[oct2-orange]
+  #+END_SRC
+
+  =image/background.png= が書き替えられるので、注意。
+
+* ナビバーのメールボタンを削除
+  =source/_includes/asides/nav.html= から以下の行を削除。
+  #+BEGIN_SRC
+  <a href="mailto:" alt="E-Mail"><img src="/images/Envelope.png"></a>
+  #+END_SRC

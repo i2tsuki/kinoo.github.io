@@ -1,0 +1,9 @@
+$ stardict -m 6
+...
+[debug] Loading PowerWord data parsing plug-in...
+PowerWord data parsing plug-in loaded.
+[debug] Loading WordNet dict rendering plug-in...
+WordNet dict rendering plug-in loaded.
+[debug] Verification status of '/usr/share/stardict/dic/stardict-dict/stardict-dict.ifo': dictionary is OK
+[debug] Verification status of '/home/oktk/.stardict/dic/EIJI-123sd.ifo': dictionary is broken
+bookname: StarDict dictionary, wordcount 9

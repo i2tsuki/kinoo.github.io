@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>unzip_in_gentoo - 日々、しこうさくごの足あと</title>
+  <meta name="author" content="kixonn">
+
+  
+  <meta name="description" content="Gentoo で zip ファイル展開時に文字化け (zip ファイルの中のファイル名が、 shift-jis でエンコードされている) することがある。以下のようにすればよいらしい 1 。 % sudo USE="nastspec" emerge -uDt unzip 下手に mvconv &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kixonn.github.io/blog/2014/06/22/unzip-in-gentoo">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="日々、しこうさくごの足あと" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-41371716-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+</hgroup>
+
+</header>
+  <!-- <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.co.jp/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kixonn.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav> -->
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Unzip_in_gentoo</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-22T10:47:08+09:00" pubdate data-updated="true">Jun 22<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>
+Gentoo で zip ファイル展開時に文字化け (zip ファイルの中のファイル名が、 shift-jis でエンコードされている) することがある。以下のようにすればよいらしい <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> 。
+</p>
+
+
+
+
+<pre class="example">
+% sudo USE="nastspec" emerge -uDt unzip
+</pre>
+
+
+
+
+<p>
+下手に mvconv とかしなくてもよかったみたいです。←したひと
+</p>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://insnvlovn.blogspot.jp/2011/06/unzip.html">http://insnvlovn.blogspot.jp/2011/06/unzip.html</a> 日記 (gentoo,php): unzip の文字化け
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kixonn</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-22T10:47:08+09:00" pubdate data-updated="true">Jun 22<span>nd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/gentoo/'>Gentoo</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kixonn.github.io/blog/2014/06/22/unzip-in-gentoo/" data-via="" data-counturl="http://kixonn.github.io/blog/2014/06/22/unzip-in-gentoo/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/27/genymotion-on-linux/" title="Previous Post: Linux から Android OS を起動して Kindle を読む">&laquo; Linux から Android OS を起動して Kindle を読む</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/09/09/ripping-cd-by-cdrdao/" title="Next Post: cdrdao で AccurateRip">cdrdao で AccurateRip &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <ul id="recent_posts">
+      <li class="post">
+      <a href="http://kixonn.github.io" alt="Home"><img src="/images/Home.png"></a>
+      <a href="http://kixonn.github.io/archives/" alt="Archives"><img src="/images/Calendar.png"></a>
+      <a href="http://kixonn.github.io/atom.xml" alt="subscribe feed"><img src="/images/rss_big.png"></a>
+      </li>
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <br /><div align=center>
+    <img src="/images/avator.png" height=150px>
+  </div><br />
+  <p>来年度から、六本木で働く大学院生。この日記みたいなものはその毎日のログみたいなものです。</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/02/mpd-conf-for-pulseaudio/">Mpd で Pulseaudio を出力先に指定する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/18/get-ipv4-addr-in-shell/">シェルスクリプト中で Ip アドレスをゲットする方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/09/ripping-cd-by-cdrdao/">Cdrdao で AccurateRip</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/22/unzip-in-gentoo/">Unzip_in_gentoo</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/27/genymotion-on-linux/">Linux から Android OS を起動して Kindle を読む</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/android/'>Android (2)</a></li>
+<li class='category'><a href='/blog/categories/c-11/'>C++11 (1)</a></li>
+<li class='category'><a href='/blog/categories/emacs/'>Emacs (4)</a></li>
+<li class='category'><a href='/blog/categories/firefox/'>Firefox (1)</a></li>
+<li class='category'><a href='/blog/categories/gentoo/'>Gentoo (5)</a></li>
+<li class='category'><a href='/blog/categories/gentoolinux/'>GentooLinux (5)</a></li>
+<li class='category'><a href='/blog/categories/haskell/'>Haskell (1)</a></li>
+<li class='category'><a href='/blog/categories/js/'>JS (1)</a></li>
+<li class='category'><a href='/blog/categories/linux/'>Linux (9)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>Octopress (4)</a></li>
+<li class='category'><a href='/blog/categories/org-mode/'>Org-mode (1)</a></li>
+<li class='category'><a href='/blog/categories/tex/'>TeX (1)</a></li>
+<li class='category'><a href='/blog/categories/vimperator/'>Vimperator (1)</a></li>
+<li class='category'><a href='/blog/categories/tmux/'>tmux (1)</a></li>
+<li class='category'><a href='/blog/categories/zsh/'>zsh (1)</a></li>
+
+  </ul>
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/kixonn">@kixonn</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'kixonn',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - kixonn -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
