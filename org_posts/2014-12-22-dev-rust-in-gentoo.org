@@ -26,7 +26,8 @@ categories: Gentoo Rust
 現在は 0.11, 0.12, nightly, git の 4 つのバージョンが用意されています。
 
 一方で rust のパッケージマネージャである cargo は ebuild が用意されていません。
-調べたところ rust という名前の overlay があり cargo の ebuild を扱っているのですが、対応する rust のバージョンが rust:git 対応するものだけでした。
+調べたところ rust という名前の overlay があり cargo の ebuild を扱っているのですが、対応する rust のバージョンが rust:git 対応するものだけでした。 [fn:1]
+
 私は rust:nightly を使用しているのですが、 cargo の最新版は rust の nightly ではビルドできないようでした。
 そこで nightly 用の cargo を書きました。 github のリンクを貼っておきます。
 
@@ -36,4 +37,7 @@ https://github.com/kixonn/portage/blob/master/dev-rust/cargo/cargo-999-r1.ebuild
 
 将来的には python の pip のように、 eselect python set 1 とすると cargo のバージョンも柔軟に切り替えられるようにすることで、 Gentoo の強みを生かせるようにしていきたいですね。
 
-22 日目はこれで終わりですが、明日以降のカレンダーは入っていないのですが、どうなるんでしょう (^^;;。。
+22 日目はこれで終わりですが、明日以降のカレンダーは入っていないのですが、どうなるんでしょう (^^;;
+
+* 参照
+[fn:1] "Gentoo Portage Overlays - Browse Portage" http://gpo.zugaina.org/Overlays/rust
