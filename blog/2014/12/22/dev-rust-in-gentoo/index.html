@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Gentoo Linux に RVM をインストールしてみる - 日々、しこうさくごの足あと</title>
+  <title>Gentoo における Rust 環境 - 日々、しこうさくごの足あと</title>
   <meta name="author" content="kixonn">
 
   
-  <meta name="description" content="Octopress を導入する際に、システムの rake ではうまく動かなかったので、ユーザスペースに Ruby をインストールして試してみた。結論から言うと、 RVM でインストールした Ruby では Octopress の動作を確認できた。 環境 Gentoo Linux 64bit &hellip;">
+  <meta name="description" content="この記事は Gentoo Advent Calendar 2014 - Qiita の 22 日目の記事です。
+投稿が遅れましたが、 emerge アップデートかけてたら遅くなったということでお許しください。 21 日目は @mazgi さんで、 How to increase ulimit &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kixonn.github.io/blog/2013/05/07/gentoo-ni-rvm-woinsutorusitemiru">
+  <link rel="canonical" href="http://kixonn.github.io/blog/2014/12/22/dev-rust-in-gentoo">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="日々、しこうさくごの足あと" type="application/atom+xml">
@@ -78,7 +79,7 @@
   
   <header>
     
-      <h1 class="entry-title">Gentoo Linux に RVM をインストールしてみる</h1>
+      <h1 class="entry-title">Gentoo における Rust 環境</h1>
     
     
       <p class="meta">
@@ -94,7 +95,7 @@
   
 
 
-<time datetime="2013-05-07T22:00:00+09:00" pubdate data-updated="true">May 7<span>th</span>, 2013</time>
+<time datetime="2014-12-22T08:00:00+09:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2014</time>
         
       </p>
     
@@ -102,92 +103,90 @@
 
 
 <div class="entry-content"><p>
-Octopress を導入する際に、システムの rake ではうまく動かなかったので、ユーザスペースに Ruby をインストールして試してみた。結論から言うと、 RVM でインストールした Ruby では Octopress の動作を確認できた。
+この記事は <a href="http://qiita.com/advent-calendar/2014/gentoo">Gentoo Advent Calendar 2014 - Qiita</a> の 22 日目の記事です。
+投稿が遅れましたが、 emerge アップデートかけてたら遅くなったということでお許しください。
 </p>
 
 
 
 
-<div id="outline-container-sec-1" class="outline-2">
-<h2 id="sec-1">環境</h2>
-<div class="outline-text-2" id="text-1">
+<p>
+21 日目は @mazgi さんで、 <a href="http://blog.mazgi.net/entry/increase-ulimit-on-gentoo">How to increase ulimit on #Gentoo ?</a> というタイトルで Gentoo の LSB スクリプトにおける fd の調整について解説いただきました。
+</p>
+
+
+
+
+<p>
+さて、最近 Hacker news を見ていると注目度合いがここにきて上昇している rust ですが、当然 Gentoo でもインストールできます。
+</p>
+
+
+
+
+<p>
+すでに、公式の portage にも入っているとおり下記の ebuild が存在します。
+</p>
+
+
+
+
 <ul class="org-ul">
-<li>Gentoo Linux 64bit
+<li>app-emacs/rust-mode
 </li>
-<li>システム Ruby のバージョン: ruby-1.9.3p392
+<li>app-shells/rust-zshcomp
+</li>
+<li>app-admin/eselect-rust
+</li>
+<li>dev-lang/rust
 </li>
 </ul>
-</div>
-</div>
 
 
-<div id="outline-container-sec-2" class="outline-2">
-<h2 id="sec-2">インストール</h2>
-<div class="outline-text-2" id="text-2">
-<p>
-RVM 公式 の <a href="https://rvm.io/rvm/install/">RVM: Ruby Version Manager - Installing RVM</a><sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> を参考に、今回は stable 版をインストールしたいので以下のコマンドを実行する。 proxy を挟む場合も同様。
-</p>
 
-<div class="example:">
-<p>
-$ curl -L <a href="https://get.rvm.io">https://get.rvm.io</a> | bash -s stable
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   184  100   184    0     0    201      0 &#x2013;:&#x2013;:&#x2013; &#x2013;:&#x2013;:&#x2013; &#x2013;:&#x2013;:&#x2013;   201
-100 13641  100 13641    0     0   5399      0  0:00:02  0:00:02 &#x2013;:&#x2013;:&#x2013; 68547
-Downloading RVM from wayneeseguin branch stable
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100   124  100   124    0     0    152      0 &#x2013;:&#x2013;:&#x2013; &#x2013;:&#x2013;:&#x2013; &#x2013;:&#x2013;:&#x2013;   152
-100 3263k  100 3263k    0     0   244k      0  0:00:13  0:00:13 &#x2013;:&#x2013;:&#x2013;  300k
-</p>
 
 <p>
-……
+これで、お分かりになられた方もおられると思いますが、 eselect module があり、当然 eselect で rust のバージョンを切り換えることができます。
+現在は 0.11, 0.12, nightly, git の 4 つのバージョンが用意されています。
 </p>
+
+
+
 
 <p>
-$ echo &#8220;source $HOME/.rvm/scripts/rvm&#8221; &gt;&gt; ~/.zshrc
+一方で rust のパッケージマネージャである cargo は ebuild が用意されていません。
+調べたところ rust という名前の overlay があり cargo の ebuild を扱っているのですが、対応する rust のバージョンが rust:git 対応するものだけでした。
+私は rust:nightly を使用しているのですが、 cargo の最新版は rust の nightly ではビルドできないようでした。
+そこで nightly 用の cargo を書きました。 github のリンクを貼っておきます。
 </p>
 
-</div>
-</div>
-</div>
 
 
-<div id="outline-container-sec-3" class="outline-2">
-<h2 id="sec-3">使い方</h2>
-<div class="outline-text-2" id="text-3">
+
 <p>
-今回は rails とか使わず、 Ruby の環境を構築するだけなので、必要最小限のコマンドをメモしておく。
+<a href="https://github.com/kixonn/portage/blob/master/dev-rust/cargo/cargo-999-r1.ebuild">https://github.com/kixonn/portage/blob/master/dev-rust/cargo/cargo-999-r1.ebuild</a>
 </p>
 
-<div class="example:">
+
+
+
 <p>
-$ rvm list known
-## 利用できる Ruby のバージョンの表示
-$ rvm install ruby-2.0.0-rc1
-## 特定のバージョンの Ruby をインストール
-$ rvm use ruby-2.0.0-rc1
-## ローカルの Ruby を切り替え
-## rake 等の gem によってインストールされたパッケージの実行ファイルのパスもこちらが優先されるので便利!!
+ただし、ただ rust をインストールしただけの状態ですと、 <code>rustc</code> が存在しませんので、 <code>eselect rust set 1</code> を実行して symlink を作成しておく必要があります。
 </p>
 
-</div>
-</div>
-</div>
 
 
-<div id="footnotes">
-<h2 class="footnotes">Footnotes: </h2>
-<div id="text-footnotes">
 
-<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
-<a href="https://rvm.io/rvm/install/">https://rvm.io/rvm/install/</a> RVM: Ruby Version Manager - Installing RVM
-</p></div>
+<p>
+将来的には python の pip のように、 eselect python set 1 とすると cargo のバージョンも柔軟に切り替えられるようにすることで、 Gentoo の強みを生かせるようにしていきたいですね。
+</p>
 
 
-</div>
-</div>
+
+
+<p>
+22 日目はこれで終わりですが、明日以降のカレンダーは入っていないのですが、どうなるんでしょう (^^;;。。
+</p>
 
 </div>
 
@@ -211,12 +210,12 @@ $ rvm use ruby-2.0.0-rc1
   
 
 
-<time datetime="2013-05-07T22:00:00+09:00" pubdate data-updated="true">May 7<span>th</span>, 2013</time>
+<time datetime="2014-12-22T08:00:00+09:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/gentoolinux/'>GentooLinux</a>, <a class='category' href='/blog/categories/octopress/'>Octopress</a>
+    <a class='category' href='/blog/categories/gentoo/'>Gentoo</a>, <a class='category' href='/blog/categories/rust/'>Rust</a>
   
 </span>
 
@@ -225,7 +224,7 @@ $ rvm use ruby-2.0.0-rc1
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kixonn.github.io/blog/2013/05/07/gentoo-ni-rvm-woinsutorusitemiru/" data-via="" data-counturl="http://kixonn.github.io/blog/2013/05/07/gentoo-ni-rvm-woinsutorusitemiru/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://kixonn.github.io/blog/2014/12/22/dev-rust-in-gentoo/" data-via="" data-counturl="http://kixonn.github.io/blog/2014/12/22/dev-rust-in-gentoo/" >Tweet</a>
   
   
   
@@ -234,10 +233,8 @@ $ rvm use ruby-2.0.0-rc1
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/1970/01/01/readme/" title="Previous Post: readme">&laquo; readme</a>
+        <a class="basic-alignment left" href="/blog/2014/11/02/mpd-conf-for-pulseaudio/" title="Previous Post: mpd で pulseaudio を出力先に指定する">&laquo; mpd で pulseaudio を出力先に指定する</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/05/08/notitle/" title="Next Post: TeX で生成する PDF のバージョンを下げる">TeX で生成する PDF のバージョンを下げる &raquo;</a>
       
     </p>
   </footer>

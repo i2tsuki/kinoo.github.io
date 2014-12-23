@@ -1,0 +1,39 @@
+#+BEGIN_HTML
+---
+layout: post
+title: Gentoo における Rust 環境
+date: 2014-12-22 08:00:00 +0900
+comments: true
+categories: Gentoo Rust
+---
+#+END_HTML
+#+OPTIONS: toc:nil num:nil LaTeX:t
+この記事は [[http://qiita.com/advent-calendar/2014/gentoo][Gentoo Advent Calendar 2014 - Qiita]] の 22 日目の記事です。
+投稿が遅れましたが、 emerge アップデートかけてたら遅くなったということでお許しください。
+
+21 日目は @mazgi さんで、 [[http://blog.mazgi.net/entry/increase-ulimit-on-gentoo][How to increase ulimit on #Gentoo ?]] というタイトルで Gentoo の LSB スクリプトにおける fd の調整について解説いただきました。
+
+さて、最近 Hacker news を見ていると注目度合いがここにきて上昇している rust ですが、当然 Gentoo でもインストールできます。
+
+すでに、公式の portage にも入っているとおり下記の ebuild が存在します。
+
+- app-emacs/rust-mode
+- app-shells/rust-zshcomp
+- app-admin/eselect-rust
+- dev-lang/rust
+
+これで、お分かりになられた方もおられると思いますが、 eselect module があり、当然 eselect で rust のバージョンを切り換えることができます。
+現在は 0.11, 0.12, nightly, git の 4 つのバージョンが用意されています。
+
+一方で rust のパッケージマネージャである cargo は ebuild が用意されていません。
+調べたところ rust という名前の overlay があり cargo の ebuild を扱っているのですが、対応する rust のバージョンが rust:git 対応するものだけでした。
+私は rust:nightly を使用しているのですが、 cargo の最新版は rust の nightly ではビルドできないようでした。
+そこで nightly 用の cargo を書きました。 github のリンクを貼っておきます。
+
+https://github.com/kixonn/portage/blob/master/dev-rust/cargo/cargo-999-r1.ebuild
+
+ただし、ただ rust をインストールしただけの状態ですと、 =rustc= が存在しませんので、 =eselect rust set 1= を実行して symlink を作成しておく必要があります。
+
+将来的には python の pip のように、 eselect python set 1 とすると cargo のバージョンも柔軟に切り替えられるようにすることで、 Gentoo の強みを生かせるようにしていきたいですね。
+
+22 日目はこれで終わりですが、明日以降のカレンダーは入っていないのですが、どうなるんでしょう (^^;;。。

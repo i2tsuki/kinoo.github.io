@@ -9,9 +9,8 @@
   <meta name="author" content="kixonn">
 
   
-  <meta name="description" content="org-mode で、 octopress を記述する方法をまとめようとしていて、めとめられていなかったのでまとめてみた。
-ちなみに、初期の頃からずっと org-mode で書いている。
-すでに紹介されている方法 1 と差分が少しあったので注意。 導入 octopress &hellip;">
+  <meta name="description" content="ruby で作成された CMS を使ってサイトを構築したいと考えていたところ、 Locomotive CMS 1 というのを見つけたので触ってみる。
+バックエンドの DB として MongoDB を使っていのも面白そうだった。 導入 CentOS での導入手順としては、日本語で解説されている記事 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +76,156 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/08/locomotive-cms-in-apache/">Locomotive CMS を Apache 上で動かす</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-08T06:25:00+09:00" pubdate data-updated="true">Aug 8<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>
+ruby で作成された CMS を使ってサイトを構築したいと考えていたところ、 Locomotive CMS <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> というのを見つけたので触ってみる。
+バックエンドの DB として MongoDB を使っていのも面白そうだった。
+</p>
+
+
+
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">導入</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+CentOS での導入手順としては、日本語で解説されている記事 <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> があったり、公式ページの Guide に載っていたりするので、そちらを参考にコマンドをまとめてみる。なお，事前に rvm や passenger や MongoDB のインストールは任意の方法で行っておく。
+</p>
+
+<pre class="example">
+$ mkdir -p ~/rails
+$ cd rails
+$ gem install rails --version=3.2.14
+$ rails new locomotive --skip-active-record --skip-test-unit --skip-javascript --skip-bundle
+$ echo "gem 'rails', '3.2.14'
+gem 'locomotive_cms', '~&gt; 2.0.1', require: 'locomotive/engine'
+gem 'therubyracer', '&gt;= 0.8.2' # Linux only
+
+gem 'unicorn', group: :development
+gem 'thin', group: :production
+
+group :assets do
+  gem 'compass-rails',  '~&gt; 1.0.2'
+  gem 'sass-rails',     '~&gt; 3.2.4'
+  gem 'coffee-rails',   '~&gt; 3.2.2'
+  gem 'uglifier',       '~&gt; 1.2.4'
+end" &gt; Gemfile
+$ bundle install
+$ bundle exec rails generate locomotive:install
+</pre>
+
+<p>
+Passenger 周りの設定について以下のように書く。
+</p>
+
+<figure class='code'><figcaption><span>&#8220;/etc/httpd/modules/mod_passenger.conf&#8221;  (passenger.conf)</span> <a href='/downloads/code/20130808/passenger.conf'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># passenger-install-apache2-module --snippet を実行して表示される設定を使用。</span>
+</span><span class='line'>LoadModule passenger_module /usr/lib64/httpd/modules/mod_passenger.so
+</span><span class='line'>PassengerRoot /usr/local/rvm/gems/ruby-1.9.3-p448/gems/passenger-4.0.10
+</span><span class='line'>PassengerDefaultRuby /usr/local/rvm/wrappers/ruby-1.9.3-p448/ruby
+</span><span class='line'>PassengerResolveSymlinksInDocumentRoot on
+</span><span class='line'>
+</span><span class='line'>&lt;VirtualHost *:80&gt;
+</span><span class='line'>  DocumentRoot <span class="s2">&quot;/home/www/&quot;</span>
+</span><span class='line'>  RackBaseURI /locomotive
+</span><span class='line'>  <span class="c"># RailsEnv production</span>
+</span><span class='line'>  RailsEnv development
+</span><span class='line'>  <span class="c"># 今回は development モードで動かしてみる</span>
+</span><span class='line'>  PassengerEnabled on
+</span><span class='line'>
+</span><span class='line'>  &lt;Directory /home/www/locomotive &gt;
+</span><span class='line'>  <span class="c"># Options ExecCGI FollowSymLinks</span>
+</span><span class='line'>    Options -MultiViews -Indexes
+</span><span class='line'>    AllowOverride All
+</span><span class='line'>    Order Allow,Deny
+</span><span class='line'>    Allow from all
+</span><span class='line'>  &lt;/Directory&gt;
+</span><span class='line'>  <span class="c"># PassengerMaxPoolSize 30</span>
+</span><span class='line'>  <span class="c"># PassengerMaxInstancesPerApp 1</span>
+</span><span class='line'>&lt;/VirtualHost&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+<p>
+なお、今回は Document Root に設置していないので (?) 、 Save 機能がうまく機能しなかった。 Document Root に設定しないとうまく動かないっぽいので、運用の際には注意が必要。癖がありすぎる、レスポンスが遅い ( MongoDB が原因?) ので、運用していく予定はない。けど、グラフィカルで気持ちがよいので、今後が気になるところ。
+</p>
+</div>
+</div>
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<a href="http://www.locomotivecms.com/">http://www.locomotivecms.com/</a> LocomotiveCMS is an open source CMS for Rails
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+<a href="http://xxxcaqui.hatenablog.cofffffffffffm/entry/2013/04/12/210928">http://xxxcaqui.hatenablog.cofffffffffffm/entry/2013/04/12/210928</a> Rails 上で動く CMS LocomotiveCMS を使ってみる。 - xxxcaqui.log
+</p></div>
+
+
+</div>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1656,68 +1805,6 @@ Include file &#8217;<sub>code</sub> lang:bash 20130522/stardict<sub>stardict</su
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/21/current-directory-name-in-tmux-window-name/">作業ディレクトリの名前を Tmux のウィンドウ名に表示する</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-21T19:46:00+09:00" pubdate data-updated="true">May 21<span>st</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>
-毎回， tmux でウィンドウの名前はカレントディレクトリにリネームして使っているのだけれど，自動でリネームしてくれたらいいのにって思って，調べてみたら以下 <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> を <code>~/.zshrc</code> に書けばいいらしい．なるほどなるほど．
-</p>
-
-
-
-
-<div class="html:">
-<p>
-Include file &#8217;<sub>code</sub> lang:bash 20130521/zshrc&#8217; contains invalid characters or sequences
-</p>
-
-</div>
-
-
-<div id="footnotes">
-<h2 class="footnotes">Footnotes: </h2>
-<div id="text-footnotes">
-
-<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
-<a href="http://mint.hateblo.jp/entry/2012/12/17/175553">http://mint.hateblo.jp/entry/2012/12/17/175553</a> tmux のウィンドウ名をカレントディレクトリにする - ミントフレーバー緑茶
-</p></div>
-
-
-</div>
-</div>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -1751,6 +1838,10 @@ Include file &#8217;<sub>code</sub> lang:bash 20130521/zshrc&#8217; contains inv
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/12/22/dev-rust-in-gentoo/">Gentoo における Rust 環境</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/02/mpd-conf-for-pulseaudio/">Mpd で Pulseaudio を出力先に指定する</a>
       </li>
     
@@ -1766,10 +1857,6 @@ Include file &#8217;<sub>code</sub> lang:bash 20130521/zshrc&#8217; contains inv
         <a href="/blog/2014/06/22/unzip-in-gentoo/">Unzip_in_gentoo</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/04/27/genymotion-on-linux/">Linux から Android OS を起動して Kindle を読む</a>
-      </li>
-    
   </ul>
 </section>
 <section>
@@ -1779,13 +1866,14 @@ Include file &#8217;<sub>code</sub> lang:bash 20130521/zshrc&#8217; contains inv
 <li class='category'><a href='/blog/categories/c-11/'>C++11 (1)</a></li>
 <li class='category'><a href='/blog/categories/emacs/'>Emacs (4)</a></li>
 <li class='category'><a href='/blog/categories/firefox/'>Firefox (1)</a></li>
-<li class='category'><a href='/blog/categories/gentoo/'>Gentoo (5)</a></li>
+<li class='category'><a href='/blog/categories/gentoo/'>Gentoo (6)</a></li>
 <li class='category'><a href='/blog/categories/gentoolinux/'>GentooLinux (5)</a></li>
 <li class='category'><a href='/blog/categories/haskell/'>Haskell (1)</a></li>
 <li class='category'><a href='/blog/categories/js/'>JS (1)</a></li>
 <li class='category'><a href='/blog/categories/linux/'>Linux (9)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>Octopress (4)</a></li>
 <li class='category'><a href='/blog/categories/org-mode/'>Org-mode (1)</a></li>
+<li class='category'><a href='/blog/categories/rust/'>Rust (1)</a></li>
 <li class='category'><a href='/blog/categories/tex/'>TeX (1)</a></li>
 <li class='category'><a href='/blog/categories/vimperator/'>Vimperator (1)</a></li>
 <li class='category'><a href='/blog/categories/tmux/'>tmux (1)</a></li>
